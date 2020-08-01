@@ -1,0 +1,225 @@
+<div class="header pb-8 pt-5 pt-lg-8" style="min-height: 600px; background-image: url(assets/img/theme/users.jpg); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-danger opacity-8"></span>
+    <br/><br/>
+    <!-- Header container -->
+    <div class="container-fluid d-flex align-items-center">
+      <div class="row">
+        <div class="col-lg-7 col-md-10">
+          <h1 class="display-2 text-white">Hello {{"username"}}</h1>
+          <p class="text-white mt-0 mb-5">Esta es la interfaz de usuarios. Podras crear editar o inactivarlos, así como modificarles sus permisos de acceso </p>
+        </div>
+      </div>
+    </div> 
+
+     <!-- Card stats -->
+     <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl-3 col-lg-6">
+          <div class="card card-stats mb-4 mb-xl-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">ADMINS</h5>
+                  <span class="h2 font-weight-bold mb-0">
+                    {{ getRoleCount("ADMIN") }}
+                  </span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                    <i class="fas fa-chart-bar"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-muted text-sm">
+                <span class="text-success mr-2 createUser" (click)="createUser('ADMIN')">
+                  <i class="fa fa-arrow-up"></i> Crear Nuevo</span>
+                <span class="text-nowrap"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+          <div class="card card-stats mb-4 mb-xl-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">OPERARIOS</h5>
+                  <span class="h2 font-weight-bold mb-0">
+                    {{ getRoleCount("OPERATOR") }}
+                  </span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
+                    <i class="fas fa-chart-pie"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-muted text-sm">
+                <span class="text-danger mr-2 createUser" (click)="createUser('OPERATOR')">
+                  <i class="fa fa-arrow-up"></i> Crear Nuevo</span>
+                <span class="text-nowrap"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+          <div class="card card-stats mb-4 mb-xl-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">AUDITORES</h5>
+                  <span class="h2 font-weight-bold mb-0">
+                    {{ getRoleCount("AUDITOR") }}
+                  </span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
+                    <i class="fas fa-users"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-muted text-sm">
+                <span class="text-warning mr-2 createUser" (click)="createUser('AUDITOR')"> 
+                  <i class="fa fa-arrow-up"></i> Crear Nuevo</span>
+                <span class="text-nowrap"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+</div>
+
+<!-- Page content -->
+<div class="container-fluid mt--7">
+  <!-- Table -->
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <h3 class="mb-0">Tabla de usuarios</h3>
+        </div>
+
+        <div class="table-responsive-query" >
+
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Usuario</th>
+                <th scope="col">Nombres</th>
+                <th scope="col">Apellidos</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Proveedores</th>
+                <th scope="col">Correo</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <!--<tr *ngFor="let entity of (entities$ | async)">-->
+              <tr *ngFor="let entity of  entities.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) ">
+                <td>{{ entity.nickname }}</td>
+                <td>{{ entity.name }}</td>
+                <td>{{ entity.lastName }}</td>
+                <td>{{ entity.role }}</td>
+                <td>{{ entity.state }}</td>
+                <td>{{ entity.suppliers }}</td>
+                <td>{{ entity.email }}</td>
+                <td class="text-right">
+                  <div ngbDropdown placement="bottom-right">
+                    <a class="btn btn-sm btn-icon-only text-light"  ngbDropdownToggle>
+                      <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                      <a class="dropdown-item" (click)="watchRecord(entity)" href="javascript:void(0)">Ver</a>
+                      <a class="dropdown-item" (click)="editRecord(entity)" href="javascript:void(0)">Editar</a>
+                      <a class="dropdown-item" (click)="changeState(entity)" href="javascript:void(0)">Activar/Inactivar</a>
+                      <a class="dropdown-item" (click)="changeState(entity)" href="javascript:void(0)">Asignar permisos</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+        
+        
+        <!--<table-footer [entities]="entities" [rowsPerPage]="rowsPerPage" (pageChanged)="onPageChange($event)" ></table-footer>
+        -->
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+<div *ngFor="let entity of (entities$ | async)">
+  <p>
+    Entity Id: {{entity.id}} | Name: {{entity.name}} | Code: {{entity.code}}
+  </p>
+</div>
+-->
+  
+<!--
+  <tr>
+    <th scope="row">
+      <div class="media align-items-center">
+        <a href="javascript:void(0)" class="avatar rounded-circle mr-3">
+          <img alt="Image placeholder" src="../assets/img/theme/bootstrap.jpg">
+        </a>
+        <div class="media-body">
+          <span class="mb-0 text-sm">Argon Design System</span>
+        </div>
+      </div>
+    </th>
+    <td>
+      $2,500 USD
+    </td>
+    <td>
+      <span class="badge badge-dot mr-4">
+        <i class="bg-warning"></i> pending
+      </span>
+    </td>
+    <td>
+      <div class="avatar-group">
+        <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+          <img alt="Image placeholder" src="../assets/img/theme/team-1-800x800.jpg" class="rounded-circle">
+        </a>
+        <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Romina Hadid">
+          <img alt="Image placeholder" src="../assets/img/theme/team-2-800x800.jpg" class="rounded-circle">
+        </a>
+        <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Alexander Smith">
+          <img alt="Image placeholder" src="../assets/img/theme/team-3-800x800.jpg" class="rounded-circle">
+        </a>
+        <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Jessica Doe">
+          <img alt="Image placeholder" src="../assets/img/theme/team-4-800x800.jpg" class="rounded-circle">
+        </a>
+      </div>
+    </td>
+    <td>
+      <div class="d-flex align-items-center">
+        <span class="mr-2">60%</span>
+        <div>
+          <div class="progress">
+            <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
+          </div>
+        </div>
+      </div>
+    </td>
+    <td class="text-right">
+      <div ngbDropdown placement="bottom-right">
+        <a class="btn btn-sm btn-icon-only text-light"  ngbDropdownToggle>
+          <i class="fas fa-ellipsis-v"></i>
+        </a>
+        <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+          <a class="dropdown-item" href="javascript:void(0)">Action</a>
+          <a class="dropdown-item" href="javascript:void(0)">Another action</a>
+          <a class="dropdown-item" href="javascript:void(0)">Something else here</a>
+        </div>
+      </div>
+    </td>
+  </tr>
+  -->

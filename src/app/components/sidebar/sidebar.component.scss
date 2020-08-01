@@ -1,0 +1,12 @@
+.bg-darkBlue{
+    background-color: #333365;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: rgb(241 232 232 / 50%);
+}
+
+.navbar-light .navbar-nav .show > .nav-link, .navbar-light .navbar-nav .active > .nav-link, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .nav-link.active {
+    color: rgb(241 236 236 / 90%);
+    font-weight: bold;
+}
