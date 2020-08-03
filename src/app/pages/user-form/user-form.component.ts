@@ -6,7 +6,9 @@ import { Store, select } from "@ngrx/store";
 import { selectError, selectEntityLoaded, selectAllEntities, selectEntityIds } from "../../store/selectors/users";
 import Swal from 'sweetalert2' 
 import { ActivatedRoute } from '@angular/router';
-
+import { FilesService } from '../../services/files.service'
+import { PictureModalComponent } from '../../components/picture-modal/picture-modal.component'
+import { environment } from '../../../environments/environment'
 
 @Component({
   selector: 'app-user-form',
@@ -16,6 +18,8 @@ import { ActivatedRoute } from '@angular/router';
 export class UserFormComponent implements OnInit {
 
   @ViewChild('userForm') userFormElement;
+
+  @ViewChild( PictureModalComponent ) pictureModal: PictureModalComponent ; 
 
   checkoutForm;
 
@@ -35,11 +39,19 @@ export class UserFormComponent implements OnInit {
 
   @ViewChild('confirmPassword') confirmPassword:ElementRef;
 
+  userImage: string | ArrayBuffer
+
+  fileToSave: string
+
   constructor(private formBuilder: FormBuilder,
     private store: Store<any>,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private filesService: FilesService,
+   ){
     this.checkoutForm = this.formBuilder.group(new User());  
     //this.entityIds$.subscribe( data => console.log(data) )
+    this.userImage = environment.defaultImage
+    
   }
 
   ngOnInit(): void {
@@ -107,6 +119,7 @@ export class UserFormComponent implements OnInit {
     })
 
     this.route.params.subscribe(params => {
+
       console.log("params",params)
 
       if(params.mode === "edit" ||  params.mode === "view")
@@ -115,7 +128,14 @@ export class UserFormComponent implements OnInit {
         this.mode = params.mode
 
         this.entities$.subscribe( data => {
-          this.checkoutForm = this.formBuilder.group( data.filter( data => data.id === params["id"] )[0] )
+          const entity = data.filter( data => data.id === params["id"] )[0]
+
+          console.log("entity",entity)
+
+          delete entity["password"]
+
+          this.checkoutForm = this.formBuilder.group( entity )
+          this.userImage = environment.imagesUrl+entity.photoUrl
         })
 
         if(params.mode === "view")
@@ -135,7 +155,29 @@ export class UserFormComponent implements OnInit {
 
   }
 
-  onSubmit(userData) {
+  async onSubmit(userData) {
+
+    console.log("userData",userData)
+
+    
+
+    if(this.fileToSave)
+    {
+      
+      if(userData.photoUrl){
+        console.log("delete file")
+        this.filesService.deleteFile(userData.photoUrl)
+        .subscribe( info => console.log("deleteInfo",info))
+      }
+
+      //console.log("this.fileToSave",this.fileToSave)
+
+      await this.filesService.saveFile(this.fileToSave).toPromise()
+      .then( data => {
+        console.log(data)
+        userData.photoUrl = data[0].filename
+      })
+    }   
 
     console.log("userData",userData)
     //event.preventDefault()
@@ -187,7 +229,8 @@ export class UserFormComponent implements OnInit {
       this.store.dispatch(UsersActions.createUser({ data:userData }))
       
       this.entities$.subscribe( data => {
-        this.checkoutForm.patchValue({id: data[data.length -1].id})
+        this.checkoutForm.patchValue({id: data[data.length -1].id,
+          photoUrl:data[data.length -1].photoUrl})
       })
 
     } 
@@ -204,9 +247,48 @@ export class UserFormComponent implements OnInit {
 
   }
 
+  onFileSelect(event) {
+    
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+
+      if(!file.type.includes("jpg") && !file.type.includes("png") 
+      && !file.type.includes("gif") && !file.type.includes("jpeg") ){
+      
+        return    Swal.fire({
+              icon: 'error',
+              title: 'Espera',
+              text: "Solo se permiten imagenes",          
+          })
+      }else{
+
+        let self = this
+        const reader = new FileReader();
+        reader.addEventListener("load", function () {
+          // convert image file to base64 string
+          //console.log(reader.result)
+          self.userImage = reader.result
+
+        }, false);
+
+        const url = reader.readAsDataURL(file);
+
+        this.fileToSave = file
+
+      }
+    }
+    
+  }
+
+  ShowPicture():void{
+    this.pictureModal.open()
+  }
+
   /*submitForm(){
     this.userFormElement.nativeElement.submit();
     event.preventDefault()
   }*/
+
+
 
 }

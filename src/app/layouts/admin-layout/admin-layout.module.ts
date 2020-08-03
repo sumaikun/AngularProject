@@ -16,10 +16,10 @@ import { UserFormComponent } from '../../pages/user-form/user-form.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 // import { ToastrModule } from 'ngx-toastr';
 import { UsersResolver } from "../../resolvers/users.resolver";
-
-import { TableFooterComponent } from "../../components/table-footer/table-footer.component"
-
 import { DemoNumber } from "../../utils/demoNumber"
+import { TableFooterComponent } from "../../components/table-footer/table-footer.component"
+import { PictureModalComponent } from "../../components/picture-modal/picture-modal.component" 
+
 
 @NgModule({
   imports: [
@@ -40,10 +40,11 @@ import { DemoNumber } from "../../utils/demoNumber"
     MapsComponent,
     UsersComponent,
     UserFormComponent,
-    TableFooterComponent
+    TableFooterComponent,
+    PictureModalComponent
   ],
   providers: [
-    UsersResolver
+    UsersResolver,
   ]
 })
 

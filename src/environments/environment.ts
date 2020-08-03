@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  serverUrl: 'http://localhost:3000/'
+  serverUrl: 'http://localhost:3000/',
+  imagesUrl: 'http://localhost:3000/files/',
+  defaultImage: "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png?format=jpg&quality=90&v=1530129081"
 };
 
 /*

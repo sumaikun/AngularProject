@@ -1,15 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import {Router} from "@angular/router"
-
 import { Store, select } from "@ngrx/store";
 
 //actions to get
 import { selectAllEntities } from "../../store/selectors/users";
 import { UsersActions } from "../../store/actions";
-
 import { SearchService } from "../../services/search.service"
-
 import { Subscription }   from 'rxjs';
+import { environment } from '../../../environments/environment'
+import { PictureModalComponent } from '../../components/picture-modal/picture-modal.component'
+
+
 
 @Component({
   selector: 'app-users',
@@ -17,6 +18,8 @@ import { Subscription }   from 'rxjs';
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit, OnDestroy {
+
+  @ViewChild( PictureModalComponent ) pictureModal: PictureModalComponent ; 
 
   entities$ = this.store.pipe(select(selectAllEntities));
 
@@ -28,9 +31,15 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   subscription: Subscription;
 
+  userImage: string
+
+  appENV:any
+
   constructor(private store: Store<any>,
     private router: Router,
     private searchService: SearchService) {
+
+      this.appENV = environment
 
       //this.entities = []
 
@@ -106,6 +115,13 @@ export class UsersComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // prevent memory leak when component destroyed
     this.subscription.unsubscribe();
+  }
+
+  ShowPicture(entity):void{
+    
+    this.userImage = entity.photoUrl ? this.appENV.imagesUrl+entity.photoUrl : this.appENV.defaultImage
+
+    this.pictureModal.open()
   }
 
 }

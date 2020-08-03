@@ -13,6 +13,7 @@ export class User {
     documentType: string;
     documentNumber: string;
     suppliers: string[];
+    photoUrl:string;
 
     constructor(){
         this.id = null;
@@ -29,5 +30,6 @@ export class User {
         this.documentType = "";
         this.documentNumber = "";
         this.suppliers = null;
+        this.photoUrl = "";
     }
 }

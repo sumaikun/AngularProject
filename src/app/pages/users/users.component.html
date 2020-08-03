@@ -11,6 +11,7 @@
         </div>
       </div>
     </div> 
+    
 
      <!-- Card stats -->
      <div class="container-fluid">
@@ -120,7 +121,17 @@
             <tbody>
               <!--<tr *ngFor="let entity of (entities$ | async)">-->
               <tr *ngFor="let entity of  entities.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) ">
-                <td>{{ entity.nickname }}</td>
+                <td>
+                  <div class="pictureCell">
+                  <a href="javascript:void(0)" (click)="ShowPicture(entity)"  class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                    <img style="width:30px;height: 30px;" alt="Image placeholder" 
+                      [src]="entity.photoUrl ? appENV.imagesUrl+entity.photoUrl : appENV.defaultImage"
+                      class="avatar rounded-circle">
+                  </a>
+                  <span style="margin-left: 15px;">{{ entity.nickname }}</span>
+                  
+                  </div>
+                </td>
                 <td>{{ entity.name }}</td>
                 <td>{{ entity.lastName }}</td>
                 <td>{{ entity.role }}</td>
@@ -147,13 +158,15 @@
         </div>
         
         
-        <!--<table-footer [entities]="entities" [rowsPerPage]="rowsPerPage" (pageChanged)="onPageChange($event)" ></table-footer>
-        -->
+        <table-footer [entities]="entities" [rowsPerPage]="rowsPerPage" (pageChanged)="onPageChange($event)" ></table-footer>
+        
 
       </div>
     </div>
   </div>
 </div>
+
+<app-picture-modal [picture]="userImage" ></app-picture-modal>
 
 <!--
 <div *ngFor="let entity of (entities$ | async)">
@@ -223,3 +236,5 @@
     </td>
   </tr>
   -->
+
+  <app-picture-modal [picture]="userImage" ></app-picture-modal>

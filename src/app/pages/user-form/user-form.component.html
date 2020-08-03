@@ -104,7 +104,16 @@
                         type="file"
                         class="form-control form-control-alternative"
                         [disabled]=" mode === 'view' "
+                        (change)="onFileSelect($event)"
                       >
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="formGroup" style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                      <a href="javascript:void(0)" (click)="ShowPicture()"  class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                        <img style="width:70px;height: 70px;" alt="Image placeholder" [src]="userImage" class="avatar rounded-circle">
+                      </a>
                     </div>
                   </div>
 
@@ -177,6 +186,7 @@
                          id="input-password"
                          class="form-control form-control-alternative"
                          #password
+                         [disabled]=" mode === 'view' "
                          >
                         </div>
                     </div>
@@ -220,3 +230,4 @@
     </div>
   </div>
   
+<app-picture-modal [picture]="userImage" ></app-picture-modal>
