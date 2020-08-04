@@ -6,7 +6,7 @@
     <div class="container-fluid d-flex align-items-center">
       <div class="row">
         <div class="col-lg-7 col-md-10">
-          <h1 class="display-2 text-white">Hello {{"username"}}</h1>
+          <h1 class="display-2 text-white">Hola {{userName}}</h1>
           <p class="text-white mt-0 mb-5">Esta es la interfaz de usuarios. Podras crear editar o inactivarlos, así como modificarles sus permisos de acceso </p>
         </div>
       </div>
@@ -124,7 +124,7 @@
                 <td>
                   <div class="pictureCell">
                   <a href="javascript:void(0)" (click)="ShowPicture(entity)"  class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
-                    <img style="width:30px;height: 30px;" alt="Image placeholder" 
+                    <img style="width:30px;height: 30px;" alt="Image" 
                       [src]="entity.photoUrl ? appENV.imagesUrl+entity.photoUrl : appENV.defaultImage"
                       class="avatar rounded-circle">
                   </a>
@@ -136,7 +136,14 @@
                 <td>{{ entity.lastName }}</td>
                 <td>{{ entity.role }}</td>
                 <td>{{ entity.state }}</td>
-                <td>{{ entity.suppliers }}</td>
+                <td>
+                  <div class="avatar-group">
+                    <a  *ngFor="let supplier of  entity.suppliers" href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                      <img title="{{supplier.name}}" alt="Image" style="height:30px;width:30px" [src]="supplier.photoUrl ? appENV.imagesUrl+supplier.photoUrl : appENV.defaultImage"
+                       class="rounded-circle">
+                    </a>                    
+                  </div>
+                </td>
                 <td>{{ entity.email }}</td>
                 <td class="text-right">
                   <div ngbDropdown placement="bottom-right">
@@ -147,7 +154,7 @@
                       <a class="dropdown-item" (click)="watchRecord(entity)" href="javascript:void(0)">Ver</a>
                       <a class="dropdown-item" (click)="editRecord(entity)" href="javascript:void(0)">Editar</a>
                       <a class="dropdown-item" (click)="changeState(entity)" href="javascript:void(0)">Activar/Inactivar</a>
-                      <a class="dropdown-item" (click)="changeState(entity)" href="javascript:void(0)">Asignar permisos</a>
+                      <a class="dropdown-item" (click)="addPermissions(entity)" href="javascript:void(0)">Asignar permisos</a>
                     </div>
                   </div>
                 </td>
@@ -168,6 +175,8 @@
 
 <app-picture-modal [picture]="userImage" ></app-picture-modal>
 
+<app-select-table [headers]="selectTableHeaders"  [mode]="'suppliers'"  (idsSelectedEvent)="onidsSelectedEvent($event)" ></app-select-table>
+
 <!--
 <div *ngFor="let entity of (entities$ | async)">
   <p>
@@ -181,7 +190,7 @@
     <th scope="row">
       <div class="media align-items-center">
         <a href="javascript:void(0)" class="avatar rounded-circle mr-3">
-          <img alt="Image placeholder" src="../assets/img/theme/bootstrap.jpg">
+          <img alt="Image" src="../assets/img/theme/bootstrap.jpg">
         </a>
         <div class="media-body">
           <span class="mb-0 text-sm">Argon Design System</span>
@@ -199,16 +208,16 @@
     <td>
       <div class="avatar-group">
         <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
-          <img alt="Image placeholder" src="../assets/img/theme/team-1-800x800.jpg" class="rounded-circle">
+          <img alt="Image" src="../assets/img/theme/team-1-800x800.jpg" class="rounded-circle">
         </a>
         <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Romina Hadid">
-          <img alt="Image placeholder" src="../assets/img/theme/team-2-800x800.jpg" class="rounded-circle">
+          <img alt="Image" src="../assets/img/theme/team-2-800x800.jpg" class="rounded-circle">
         </a>
         <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Alexander Smith">
-          <img alt="Image placeholder" src="../assets/img/theme/team-3-800x800.jpg" class="rounded-circle">
+          <img alt="Image" src="../assets/img/theme/team-3-800x800.jpg" class="rounded-circle">
         </a>
         <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Jessica Doe">
-          <img alt="Image placeholder" src="../assets/img/theme/team-4-800x800.jpg" class="rounded-circle">
+          <img alt="Image" src="../assets/img/theme/team-4-800x800.jpg" class="rounded-circle">
         </a>
       </div>
     </td>
@@ -237,4 +246,3 @@
   </tr>
   -->
 
-  <app-picture-modal [picture]="userImage" ></app-picture-modal>

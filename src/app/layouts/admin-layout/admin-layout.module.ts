@@ -19,7 +19,11 @@ import { UsersResolver } from "../../resolvers/users.resolver";
 import { DemoNumber } from "../../utils/demoNumber"
 import { TableFooterComponent } from "../../components/table-footer/table-footer.component"
 import { PictureModalComponent } from "../../components/picture-modal/picture-modal.component" 
-
+import { SuppliersComponent } from "../../pages/suppliers/suppliers.component"
+import { SuppliersResolver } from "../../resolvers/suppliers.resolver";
+import { SuppliersFormComponent } from 'src/app/pages/suppliers-form/suppliers-form.component';
+import { SelectTableComponent } from "../../components/select-table/select-table.component"
+import { ProductsComponent } from 'src/app/pages/products/products.component';
 
 @NgModule({
   imports: [
@@ -41,10 +45,15 @@ import { PictureModalComponent } from "../../components/picture-modal/picture-mo
     UsersComponent,
     UserFormComponent,
     TableFooterComponent,
-    PictureModalComponent
+    PictureModalComponent,
+    SuppliersComponent,
+    SuppliersFormComponent,
+    SelectTableComponent,
+    ProductsComponent  
   ],
   providers: [
     UsersResolver,
+    SuppliersResolver
   ]
 })
 

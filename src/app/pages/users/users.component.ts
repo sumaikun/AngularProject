@@ -3,14 +3,16 @@ import {Router} from "@angular/router"
 import { Store, select } from "@ngrx/store";
 
 //actions to get
-import { selectAllEntities } from "../../store/selectors/users";
+import { selectAllEntities, selectEntityLoaded } from "../../store/selectors/users";
 import { UsersActions } from "../../store/actions";
 import { SearchService } from "../../services/search.service"
 import { Subscription }   from 'rxjs';
 import { environment } from '../../../environments/environment'
 import { PictureModalComponent } from '../../components/picture-modal/picture-modal.component'
+import { selectUser } from 'src/app/store/selectors/auth';
 
 
+import { SelectTableComponent } from '../../components/select-table/select-table.component'
 
 @Component({
   selector: 'app-users',
@@ -19,9 +21,13 @@ import { PictureModalComponent } from '../../components/picture-modal/picture-mo
 })
 export class UsersComponent implements OnInit, OnDestroy {
 
-  @ViewChild( PictureModalComponent ) pictureModal: PictureModalComponent ; 
+  @ViewChild( PictureModalComponent ) pictureModal: PictureModalComponent ;
+  
+  @ViewChild( SelectTableComponent  ) selectTableModal: SelectTableComponent 
 
   entities$ = this.store.pipe(select(selectAllEntities));
+
+  loaded$ =  this.store.pipe(select(selectEntityLoaded));
 
   entities:Array<any>
 
@@ -35,11 +41,27 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   appENV:any
 
+  userName:string
+
+  user$ =  this.store.pipe(select(selectUser));
+
+  selectTableHeaders:Array<any>
+
+  entityToUpdate:any;
+
+  buttonWasPressed: boolean
+
   constructor(private store: Store<any>,
     private router: Router,
     private searchService: SearchService) {
 
       this.appENV = environment
+
+      this.selectTableHeaders = [
+        {"key":"name","displayName":"Nombre"},
+        {"key":"city","displayName":"Ciudad"},
+        {"key":"type","displayName":"Tipo"},
+      ]
 
       //this.entities = []
 
@@ -76,10 +98,15 @@ export class UsersComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit(): void {
+
+    this.store.dispatch(UsersActions.offLoad())
+    this.buttonWasPressed = false
     this.store.dispatch(UsersActions.loadUsers());
     this.rowsPerPage = 10
     this.page = 0
     this.entities$.subscribe( data =>  this.entities = data ) 
+    this.user$.subscribe( user => this.userName = user.name+" "+user.lastName)
+  
   }
 
   createUser(role): void {
@@ -103,6 +130,24 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.router.navigate(['user-form/edit/'+entity.id])
   }
 
+  addPermissions(entity): void {
+
+    this.entityToUpdate = entity
+
+    const selectedIds = []
+
+    entity.suppliers.forEach(element => {
+      console.log("element",element)
+      selectedIds.push(element.id)
+    });
+
+    console.log("this.selectedIds",selectedIds)
+
+    this.selectTableModal.idsChecked = selectedIds
+
+    this.selectTableModal.open()
+  }
+
   changeState(): void {
    
   }
@@ -110,6 +155,37 @@ export class UsersComponent implements OnInit, OnDestroy {
   onPageChange(page:number):void {
     console.log("page to change",page)
     this.page = page
+  }
+
+  onidsSelectedEvent(suppliers:Array<string>):void {
+
+    this.buttonWasPressed = true
+
+    console.log("suppliers",suppliers)
+
+    const dataToSave = { ...this.entityToUpdate , suppliers }
+
+    //this.entityToUpdate.suppliers = suppliers
+
+    delete dataToSave.password
+
+    this.store.dispatch(UsersActions.updateUser({ id:this.entityToUpdate.id, data: dataToSave }))
+
+    this.loaded$.subscribe( loaded => {
+
+      console.log("loaded",loaded,this.buttonWasPressed)
+
+      if(loaded && this.buttonWasPressed ){
+
+        this.buttonWasPressed = false
+        this.store.dispatch(UsersActions.loadUsers());
+              
+      }
+    })    
+
+    
+    
+
   }
 
   ngOnDestroy() {

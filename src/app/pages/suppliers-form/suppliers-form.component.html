@@ -1,0 +1,153 @@
+<div class="header pb-8 pt-5 pt-lg-8 d-flex" style="min-height: 600px; background-image: url(assets/img/theme/branding.jpg); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-danger opacity-8"></span>
+    <!-- Header container -->
+</div>
+  <div class="container-fluid mt--7">
+    <div class="row" id="overImage">
+      <div class="col-xl-8 order-xl-1">
+        <div class="card bg-secondary shadow">
+        <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit(checkoutForm.value)" #userForm>
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">Cuenta de proveedor</h3>
+              </div>
+              <div class="col-4 text-right">
+                <button class="btn btn-sm btn-primary" 
+                [disabled]=" mode === 'view' "
+                type="submit">Guardar</button>
+              </div>
+            </div>
+          </div>
+
+            <div class="card-body">
+                
+                <h6 class="heading-small text-muted mb-4">Información de proveedor</h6>
+                <div class="pl-lg-4">                
+
+                    <div class="row">
+
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                        <label class="form-control-label" for="input-first-name">Nombres</label>
+                        <input
+                        type="text"
+                        id="input-first-name"
+                        class="form-control form-control-alternative"
+                        placeholder="Primer nombre"
+                        formControlName="name" required>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                        <label class="form-control-label" for="input-country">Imagen de empresa</label>
+                        <input type="number"
+                            type="file"
+                            class="form-control form-control-alternative"
+                            [disabled]=" mode === 'view' "
+                            (change)="onFileSelect($event)"
+                        >
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                        <div class="formGroup" style="display: flex; justify-content: center; align-items: center; height: 100%; padding:25px">
+                          <a href="javascript:void(0)" (click)="ShowPicture()"  class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                              <img style="width:70px;height: 70px;" alt="Image placeholder" [src]="supplierImage" class="avatar rounded-circle">
+                          </a>
+                        </div>
+                    </div>
+
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+                <!-- Address -->
+                <h6 class="heading-small text-muted mb-4">Información de contacto</h6>
+                <div class="pl-lg-4">
+                    <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                        <label class="form-control-label" for="input-address">Dirección</label>
+                        <input 
+                            id="input-address"
+                            class="form-control form-control-alternative"
+                            placeholder="Dirección"
+                            type="text"
+                            formControlName="address"
+                        >                        
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label class="form-control-label" for="input-city">Ciudad</label>
+                        <input
+                        type="text"
+                        id="input-city"
+                        class="form-control form-control-alternative"
+                        placeholder="Ciudad"
+                        formControlName="city">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                        <label class="form-control-label" for="input-country">Teléfono</label>
+                        <input type="number"
+                        id="input-country"
+                        class="form-control form-control-alternative"
+                        placeholder="Teléfono"
+                        formControlName="phone">
+                        </div>
+                    </div>
+                    
+                    </div>
+                </div>
+                <hr class="my-4" />
+                <!-- Description -->
+                
+                <h6 class="heading-small text-muted mb-4">Sistema</h6>
+                <div class="pl-lg-4">                
+                    <div class="row">
+
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                            <label class="form-control-label" for="input-username">Vendor en shopify</label>
+                            <input type="text"
+                            id="input-password"
+                            class="form-control form-control-alternative"
+                            formControlName="vendorId"     
+                            >
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label class="form-control-label" for="input-email">Tipo de empresa</label>
+                              <select class="form-control form-control-alternative" 
+                                formControlName="type">
+                              <option>Selecciona</option>
+                              <option value="BIG" >Grande</option>
+                              <option value="MEDIAN" >Mediana</option>
+                              <option value="SMALL" >Pequeña</option>
+                              <option value="PERSONAL" >Personal</option>
+                            </select>
+                          </div>
+                        </div>
+                       
+                    </div>                        
+                </div>
+            </div>
+        </form>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<app-picture-modal [picture]="supplierImage" ></app-picture-modal>

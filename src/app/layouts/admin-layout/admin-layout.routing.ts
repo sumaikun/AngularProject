@@ -7,12 +7,16 @@ import { UserProfileComponent } from '../../pages/user-profile/user-profile.comp
 import { TablesComponent } from '../../pages/tables/tables.component';
 import { UsersComponent } from '../../pages/users/users.component'
 import { UserFormComponent } from '../../pages/user-form/user-form.component'
+import { SuppliersComponent } from '../../pages/suppliers/suppliers.component'
+import { SuppliersFormComponent } from '../../pages/suppliers-form/suppliers-form.component'
 
 //Resolvers
 import { UsersResolver } from "../../resolvers/users.resolver";
+import { SuppliersResolver } from "../../resolvers/suppliers.resolver";
 
 //Guards
 import { AuthGuardService as AuthGuard } from "../../services/auth-guard.service"
+import { ProductsComponent } from 'src/app/pages/products/products.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent,
@@ -45,5 +49,33 @@ export const AdminLayoutRoutes: Routes = [
             entities:UsersResolver
         },
         canActivate: [AuthGuard]    
-    }
+    },
+    { path: 'suppliers',          component: SuppliersComponent,
+        resolve:{ 
+            entities:SuppliersResolver
+        },
+        canActivate: [AuthGuard]  
+    },
+    { path: 'supplier-form',       component:SuppliersFormComponent,
+        resolve:{ 
+            entities:SuppliersResolver
+        },
+        canActivate: [AuthGuard]  
+    },
+    { path: 'supplier-form/:mode',       component:SuppliersFormComponent,
+        resolve:{ 
+            entities:SuppliersResolver
+        },
+        canActivate: [AuthGuard]    
+    },
+    { path: 'supplier-form/:mode/:id',       component:SuppliersFormComponent,
+        resolve:{ 
+            entities:SuppliersResolver
+        },
+        canActivate: [AuthGuard]    
+    },
+    { path: 'products',          component: ProductsComponent,
+        
+        canActivate: [AuthGuard]  
+    },
 ];

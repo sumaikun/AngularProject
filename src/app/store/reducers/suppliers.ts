@@ -30,6 +30,7 @@ export const initialState: State = adapter.getInitialState({
 const _reducer = createReducer(
   initialState,
   on(SuppliersActions.loadSuppliersSuccess, (state, { data }) => {
+    console.log("data",data)
     return adapter.addAll(data, {
       ...state,
       loaded: true
@@ -38,17 +39,54 @@ const _reducer = createReducer(
   on(SuppliersActions.loadSuppliersFail, (state, { error }) => {
     return {
       ...state,
-      error
+      error,
+      loaded:false
     };
   }),
   on(SuppliersActions.loadSupplierSuccess, (state, { id, item }) => {
-    return adapter.addOne(item, state);
+    return adapter.addOne(item, {
+      ...state,
+      loaded:true
+    });
   }),
   on(SuppliersActions.loadSupplierFail, (state, { error }) => {
     return {
       ...state,
-      error
+      error,
+      loaded:false
     };
+  }),
+  on(SuppliersActions.createSupplierFail, (state, { error }) => {
+    return {
+      ...state,
+      error,
+      loaded:false
+    };
+  }),
+  on(SuppliersActions.createSupplierSuccess, (state, { item }) => {   
+    return adapter.addOne(item, {
+      ...state,
+      loaded:true
+    });    
+  }),
+  on(SuppliersActions.updateSupplierFail, (state, { error }) => {
+    return {
+      ...state,
+      error,
+      loaded:false
+    };
+  }),
+  on(SuppliersActions.updateSupplierSuccess, (state, { item }) => { 
+    return adapter.addOne(item, {
+      ...state,
+      loaded:true
+    });    
+  }),
+  on(SuppliersActions.offLoad, (state) => {    
+    return{
+      ...state,
+      loaded:false 
+    } 
   })
   // on(SupplierActions.updateSuppliers, (state, { suppliers }) => {
   //   return adapter.updateMany(suppliers, state);

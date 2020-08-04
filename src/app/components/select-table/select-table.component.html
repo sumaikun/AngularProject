@@ -1,0 +1,70 @@
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Selecciona</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      
+
+    <div class="table-responsive">
+        <table class="table align-items-center table-dark table-flush">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col"  *ngFor="let header of  headers" >{{ header.displayName }}</th>            
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let entity of entities"  >
+                <td *ngFor="let header of  headers">
+                    <div *ngIf=" header.key != 'name' "  >{{ entity[header.key] }}</div>
+                    <div *ngIf=" header.key == 'name' "  >
+                        <div class="media align-items-center">
+                            <a href="#" class="avatar rounded-circle mr-3">
+                                <img alt="Image placeholder" style="width:40px;height:40px;"
+                                 [src]="entity.photoUrl ? appENV.imagesUrl+entity.photoUrl : appENV.defaultImage">
+                            </a>
+                            <div class="form-check">
+                                <input type="checkbox"(change)="onCheckChange(entity, $event.target.checked)" [checked]="isItemChecked(entity.id)">
+                                <label class="form-check-label" style="margin-left: 5px;" for="exampleCheck1">{{ entity[header.key] }}</label>
+                            </div>                                                       
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Ok</button>
+    </div>
+</ng-template>
+
+<!--
+<tr>
+    <th scope="row">
+        <div class="media align-items-center">
+        <a href="#" class="avatar rounded-circle mr-3">
+            <img alt="Image placeholder" src="assets/img/theme/bootstrap.jpg">
+        </a>
+        <div class="media-body">
+            <span class="mb-0 text-sm">Argon Design System</span>
+        </div>
+        </div>
+    </th>
+   
+</tr>
+-->
+
+<!--
+    <div class="custom-control custom-control-alternative custom-checkbox mb-3">
+        <input class="custom-control-input" type="checkbox" (change)="onCheckChange(entity, $event.target.checked)" [checked]="isItemChecked(entity.id)" 
+        [value]="entity.id">
+        <label class="custom-control-label" >{{ entity[header.key] }}</label>                               
+    </div>
+-->

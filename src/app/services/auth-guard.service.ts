@@ -3,6 +3,8 @@ import { Router, CanActivate } from '@angular/router';
 import { Store, select } from "@ngrx/store";
 import { selectToken } from "../store/selectors/auth";
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { Observable } from 'rxjs';
+import { mergeMap, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,22 +15,34 @@ export class AuthGuardService implements CanActivate {
 
   constructor( private store: Store<any>, public router: Router,
     public jwtHelper: JwtHelperService) {}
-  canActivate(): any {
-    
-    const token = this.checkToken()
-
-    if (!token) {
-      this.router.navigate(['login']);
-      return false;
-    }
-    else{
-      return true
-    }
-    
+    canActivate(): Observable<boolean>|boolean  {
+ 
+      return this.token$.pipe(
+        map((token: string) => {
+            //console.log("token",token)
+            //console.log(this.jwtHelper.isTokenExpired(token))
+            if (!token) {
+              this.router.navigate(['login']);
+              return false;
+            }
+            else{
+              
+              if(this.jwtHelper.isTokenExpired(token))
+              {
+                this.router.navigate(['login']);
+                return false;
+              }
+              else{
+                return true;
+              }
+              
+            }
+        }
+    )) 
   }
 
-  async checkToken(){
+  /*async checkToken(){
     const token = await this.token$.toPromise() 
-    return !this.jwtHelper.isTokenExpired(token);
-  }
+    return !this.jwtHelper.isTokenExpired(token)
+  }*/
 }

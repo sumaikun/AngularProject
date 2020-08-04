@@ -36,9 +36,10 @@ export const initialState: State = adapter.getInitialState({
 const _reducer = createReducer(
   initialState,
   on(AuthActions.authSuccess, (state, { data }) => {
-    console.log("data in reducer",data)
+    
+    //console.log("data in reducer",data)
 
-    localStorage.setItem("auth_token",data.access_token)
+    //localStorage.setItem("auth_token",data.access_token)
 
     return adapter.setOne(data, {
       ...state,
@@ -52,6 +53,16 @@ const _reducer = createReducer(
     return {
       ...state,
       error
+    };
+  }),
+  on(AuthActions.logout, (state, { }) => {
+    return {
+      ...state,
+      loaded: false,
+      error: null,
+      token:null,
+      user: null,
+      role: null
     };
   }),
  

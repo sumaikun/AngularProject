@@ -43,6 +43,8 @@ export class UserFormComponent implements OnInit {
 
   fileToSave: string
 
+  buttonWasPressed: boolean
+
   constructor(private formBuilder: FormBuilder,
     private store: Store<any>,
     private route: ActivatedRoute,
@@ -56,6 +58,10 @@ export class UserFormComponent implements OnInit {
 
   ngOnInit(): void {
     
+    //this.store.dispatch(UsersActions.offLoad())
+
+    this.buttonWasPressed = false
+
     this.error$.subscribe( data => { 
       
         console.log("state",data)
@@ -132,10 +138,12 @@ export class UserFormComponent implements OnInit {
 
           console.log("entity",entity)
 
-          delete entity["password"]
+          //delete entity["password"]
 
           this.checkoutForm = this.formBuilder.group( entity )
-          this.userImage = environment.imagesUrl+entity.photoUrl
+          
+          if(entity.photoUrl){this.userImage = environment.imagesUrl+entity.photoUrl}
+          
         })
 
         if(params.mode === "view")
@@ -157,27 +165,7 @@ export class UserFormComponent implements OnInit {
 
   async onSubmit(userData) {
 
-    console.log("userData",userData)
-
-    
-
-    if(this.fileToSave)
-    {
-      
-      if(userData.photoUrl){
-        console.log("delete file")
-        this.filesService.deleteFile(userData.photoUrl)
-        .subscribe( info => console.log("deleteInfo",info))
-      }
-
-      //console.log("this.fileToSave",this.fileToSave)
-
-      await this.filesService.saveFile(this.fileToSave).toPromise()
-      .then( data => {
-        console.log(data)
-        userData.photoUrl = data[0].filename
-      })
-    }   
+    this.buttonWasPressed = true
 
     console.log("userData",userData)
     //event.preventDefault()
@@ -208,12 +196,16 @@ export class UserFormComponent implements OnInit {
       }
       
     }
-
+    else{
+      delete userData.password
+    }
     
     if(!userData.state)
     {
       userData.state = "ACTIVE"
     }
+
+    delete userData.suppliers
     
     if(userData.id)
     {
@@ -225,18 +217,36 @@ export class UserFormComponent implements OnInit {
 
     }
     else{
+      
       console.log("create action")
       this.store.dispatch(UsersActions.createUser({ data:userData }))
-      
-      this.entities$.subscribe( data => {
-        this.checkoutForm.patchValue({id: data[data.length -1].id,
-          photoUrl:data[data.length -1].photoUrl})
-      })
-
+    
     } 
 
     this.loaded$.subscribe( loaded => {
-      if(loaded){
+
+      console.log("loaded",loaded,this.buttonWasPressed)
+
+      if(loaded && this.buttonWasPressed ){
+
+        this.buttonWasPressed = false
+
+        if(!userData.id)
+        {
+          this.entities$.subscribe( data => {
+
+            console.log("data create",data)
+            
+            this.checkoutForm.patchValue({id: data[data.length -1].id,
+              photoUrl:data[data.length -1].photoUrl})
+    
+            this.saveFile(userData)
+    
+          })
+        }else{
+          this.saveFile(userData)
+        }
+
         return Swal.fire(
           'Bien',
           'Datos registrados',
@@ -245,6 +255,43 @@ export class UserFormComponent implements OnInit {
       }
     })    
 
+  }
+
+  saveFile(registerData){
+
+    console.log(registerData.id,"this.checkoutForm",this.checkoutForm.controls.id.value)
+
+    const id = registerData.id || this.checkoutForm.controls.id.value
+
+    if(this.fileToSave)
+    {
+      
+      if(registerData.photoUrl){
+        console.log("delete file")
+        this.filesService.deleteFile(registerData.photoUrl)
+        .subscribe( info => console.log("deleteInfo",info))
+      }
+
+      //console.log("this.fileToSave",this.fileToSave)
+
+      this.filesService.saveFile(this.fileToSave)
+      .subscribe( data => {
+        console.log(data)
+
+        const updateRegister = { ...registerData, photoUrl:data[0].filename, id:id  }
+
+        this.checkoutForm.patchValue({photoUrl:data[0].filename})
+              
+        console.log("registerData",updateRegister)
+        this.store.dispatch(UsersActions.updateUser(
+          {id:id,data:updateRegister}
+        ))
+      })
+
+      this.fileToSave = null      
+
+    }    
+    
   }
 
   onFileSelect(event) {

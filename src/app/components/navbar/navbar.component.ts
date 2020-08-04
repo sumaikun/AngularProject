@@ -3,6 +3,11 @@ import { ROUTES } from '../sidebar/sidebar.component';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { Router } from '@angular/router';
 import { SearchService } from '../../services/search.service'
+import { Store, select } from '@ngrx/store';
+import { selectUser } from 'src/app/store/selectors/auth';
+import { environment } from '../../../environments/environment'
+import { AuthActions } from '../../store/actions'
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-navbar',
@@ -16,15 +21,33 @@ export class NavbarComponent implements OnInit {
 
   textTosearch:string
 
+  userName:string
+
+  user$ =  this.store.pipe(select(selectUser));
+
+  userPicture:string
+
   constructor(location: Location,
       private element: ElementRef,
       private router: Router,
-      private searchService: SearchService) {
+      private searchService: SearchService,
+      private store: Store<any>) {
     this.location = location;
   }
 
   ngOnInit() {
     this.listTitles = ROUTES.filter(listTitle => listTitle);
+    this.userPicture = environment.defaultImage
+
+    this.user$.subscribe( user => {
+      this.userName = user.name+" "+user.lastName
+
+      if(user.photoUrl)
+      {
+        this.userPicture = environment.imagesUrl+user.photoUrl
+      }
+    })
+
   }
   getTitle(){
     var titlee = this.location.prepareExternalUrl(this.location.path());
@@ -42,7 +65,7 @@ export class NavbarComponent implements OnInit {
 
   checkRoute(){
     //console.log("trying to check route",this.router)
-    if(this.router.url.includes("users"))
+    if(this.router.url.includes("users") || this.router.url.includes("suppliers"))
     {
       return true
     }
@@ -52,6 +75,26 @@ export class NavbarComponent implements OnInit {
   onSearchChange(searchValue: string): void {  
     //console.log(searchValue);
     this.searchService.search(searchValue)
+  }
+
+  logout(){
+    Swal.fire({
+      title: '¿Estas seguro?',
+      text: "Vas a salir del sistema!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3f51b5',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '¡Si, adelante!',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.value) {
+        let self = this
+        this.store.dispatch(AuthActions.logout())
+        setTimeout(function(){ self.router.navigate(['login']) }, 1000);           
+      }
+    })
+    
   }
 
 }

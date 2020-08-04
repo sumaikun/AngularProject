@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.username = ""
     this.password = ""  
 
-    this.token$.subscribe ( token => console.log("token",token))
+    //this.token$.subscribe ( token => console.log("token",token))
 
     this.error$.subscribe( data => { 
       
@@ -67,8 +67,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     
 
     this.loaded$.subscribe( data => { 
-      console.log("loaded",data)
-      this.router.navigate(['dashboard'])
+      //console.log("loaded",data)
+      let self = this
+
+      setTimeout(function(){ self.router.navigate(['dashboard']) }, 1000);    
+      
     })
 
     

@@ -35,7 +35,7 @@ import { localStorageSync } from 'ngrx-store-localstorage';
 
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({keys: ['auth']})(reducer);
+  return localStorageSync({keys: ['auth'],rehydrate: true})(reducer);
 }
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
  
@@ -67,6 +67,7 @@ const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
     AppComponent,
     AdminLayoutComponent,
     AuthLayoutComponent,
+   
   ],
   exports: [
     ComponentsModule

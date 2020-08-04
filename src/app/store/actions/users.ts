@@ -14,8 +14,11 @@ export enum UserActionTypes {
   UpdateUserFail = "[User] Update User Fail",
   CreateUser = "[User] Create User",
   CreateUserSuccess = "[User] Create User Success",
-  CreateUserFail = "[User] Create User Fail"
+  CreateUserFail = "[User] Create User Fail",
+  OffLoad = "[User] OffLoad"
 }
+
+export const offLoad = createAction(UserActionTypes.OffLoad);
 
 export const loadUsers = createAction(UserActionTypes.LoadUsers);
 
@@ -90,5 +93,6 @@ export const fromUserActions = {
   createUserFail,
   updateUser,
   updateUserSuccess,
-  updateUserFail
+  updateUserFail,
+  offLoad
 };

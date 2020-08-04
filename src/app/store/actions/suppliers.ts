@@ -11,8 +11,14 @@ export enum SupplierActionTypes {
   LoadSupplierFail = "[Supplier] Load Supplier Fail",
   UpdateSupplier = "[Supplier] Update Supplier",
   UpdateSupplierSuccess = "[Supplier] Update Supplier Success",
-  UpdateSupplierFail = "[Supplier] Update Supplier Fail"
+  UpdateSupplierFail = "[Supplier] Update Supplier Fail",
+  CreateSupplier = "[Supplier] Create Supplier",
+  CreateSupplierSuccess = "[Supplier] Create Supplier Success",
+  CreateSupplierFail = "[Supplier] Create Supplier Fail",
+  OffLoad = "[Supplier] OffLoad"
 }
+
+export const offLoad = createAction(SupplierActionTypes.OffLoad);
 
 export const loadSuppliers = createAction(SupplierActionTypes.LoadSuppliers);
 
@@ -43,29 +49,49 @@ export const loadSupplierFail = createAction(
 
 export const updateSupplier = createAction(
   SupplierActionTypes.UpdateSupplier,
-  props<{ id: number | string; originalItem: any; updatedItem: any }>()
+  props<{ id: number | string; data: any;  }>()
 );
 
 export const updateSupplierSuccess = createAction(
   SupplierActionTypes.UpdateSupplierSuccess,
-  props<{ id: number | string; originalItem: any; updatedItem: any }>()
+  props<{ item: any }>()
 );
 
 export const updateSupplierFail = createAction(
   SupplierActionTypes.UpdateSupplierFail,
   props<{
-    id: number | string;
-    originalItem: any;
-    updatedItem: any;
     error: Error | any;
   }>()
 );
 
+export const createSupplier = createAction(
+  SupplierActionTypes.CreateSupplier,
+  props<{ data: any }>()
+);
+
+export const createSupplierSuccess = createAction(
+  SupplierActionTypes.CreateSupplierSuccess,
+  props<{ item: any }>()
+);
+
+export const createSupplierFail = createAction(
+  SupplierActionTypes.UpdateSupplierFail,
+  props<{
+    error: Error | any;
+  }>()
+);
 export const fromSupplierActions = {
   loadSuppliers,
   loadSuppliersFail,
   loadSuppliersSuccess,
   loadSupplier,
   loadSupplierFail,
-  loadSupplierSuccess
+  loadSupplierSuccess,
+  createSupplier,
+  createSupplierSuccess,
+  createSupplierFail,
+  updateSupplier,
+  updateSupplierSuccess,
+  updateSupplierFail,
+  offLoad
 };

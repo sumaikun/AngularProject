@@ -1,5 +1,7 @@
-.createUser{
-    cursor:pointer;
+.centerContent{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 // Small devices (landscape phones, 576px and up)
@@ -19,13 +21,6 @@
 }
 
 @media (max-width: 1400px) {
-    .table-responsive-query{
-        overflow: auto;
-        width: 100%;
-    }
-}
-
-@media (max-width: 1600px) {
     .table-responsive-query{
         overflow: auto;
         width: 100%;

@@ -39,35 +39,54 @@ const _reducer = createReducer(
   on(UsersActions.loadUsersFail, (state, { error }) => {
     return {
       ...state,
-      error
+      error,
+      loaded:false
     };
   }),
   on(UsersActions.loadUserSuccess, (state, { id, item }) => {
-    return adapter.addOne(item, state);
+    return adapter.addOne(item, {
+      ...state,
+      loaded:true
+    });
   }),
   on(UsersActions.loadUserFail, (state, { error }) => {
     return {
       ...state,
-      error
+      error,
+      loaded:false
     };
   }),
   on(UsersActions.createUserFail, (state, { error }) => {
     return {
       ...state,
-      error
+      error,
+      loaded:false
     };
   }),
   on(UsersActions.createUserSuccess, (state, { item }) => {    
-    return adapter.addOne(item, state);    
+    return adapter.addOne(item, {
+      ...state,
+      loaded:true
+    });    
   }),
   on(UsersActions.updateUserFail, (state, { error }) => {
     return {
       ...state,
-      error
+      error,
+      loaded:false
     };
   }),
   on(UsersActions.updateUserSuccess, (state, { item }) => {    
-    return adapter.addOne(item, state);    
+    return adapter.addOne(item, {
+      ...state,
+      loaded:true
+    });    
+  }),
+  on(UsersActions.offLoad, (state) => {    
+    return{
+      ...state,
+      loaded:false 
+    } 
   })
   // on(UserActions.updateUsers, (state, { users }) => {
   //   return adapter.updateMany(users, state);
