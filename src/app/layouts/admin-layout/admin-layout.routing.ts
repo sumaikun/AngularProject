@@ -9,6 +9,7 @@ import { UsersComponent } from '../../pages/users/users.component'
 import { UserFormComponent } from '../../pages/user-form/user-form.component'
 import { SuppliersComponent } from '../../pages/suppliers/suppliers.component'
 import { SuppliersFormComponent } from '../../pages/suppliers-form/suppliers-form.component'
+import { RulesComponent } from '../../pages/rules/rules.component'
 
 //Resolvers
 import { UsersResolver } from "../../resolvers/users.resolver";
@@ -78,4 +79,8 @@ export const AdminLayoutRoutes: Routes = [
         
         canActivate: [AuthGuard]  
     },
+    { path: 'rules',          component: RulesComponent,
+        
+        canActivate: [AuthGuard]  
+    }
 ];

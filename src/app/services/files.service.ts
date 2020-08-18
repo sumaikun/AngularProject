@@ -13,7 +13,7 @@ export class FilesService {
     const formData = new FormData();
     formData.append('file', file);
 
-    return this.http.post<any>(environment.serverUrl+"files/uploadImage", formData)
+    return this.http.post<any>(environment.serverUrl+"fileUpload", formData)
     /*.subscribe(
       (res) => console.log(res),
       (err) => console.log(err)
@@ -21,7 +21,7 @@ export class FilesService {
   }
 
   deleteFile(fileName:string):any{
-    return this.http.delete(environment.serverUrl+"files/"+fileName)
+    return this.http.delete(environment.serverUrl+"deleteFile/"+fileName)
   }
 
 }

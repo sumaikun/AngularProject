@@ -24,9 +24,13 @@ import { SuppliersResolver } from "../../resolvers/suppliers.resolver";
 import { SuppliersFormComponent } from 'src/app/pages/suppliers-form/suppliers-form.component';
 import { SelectTableComponent } from "../../components/select-table/select-table.component"
 import { ProductsComponent } from 'src/app/pages/products/products.component';
+import { RulesComponent } from 'src/app/pages/rules/rules.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+
 
 @NgModule({
   imports: [
+    NgSelectModule,
     CommonModule,
     RouterModule.forChild(AdminLayoutRoutes),
     FormsModule,
@@ -49,7 +53,8 @@ import { ProductsComponent } from 'src/app/pages/products/products.component';
     SuppliersComponent,
     SuppliersFormComponent,
     SelectTableComponent,
-    ProductsComponent  
+    ProductsComponent,
+    RulesComponent  
   ],
   providers: [
     UsersResolver,

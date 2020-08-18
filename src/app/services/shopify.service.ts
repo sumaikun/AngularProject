@@ -10,7 +10,11 @@ export class ShopifyService {
   constructor(public http: HttpClient) { }
 
   getProducts():any{
-    return this.http.get(environment.serverUrl+"auth/test")
+    return this.http.get(environment.serverUrl+"shopify/allProducts/1")
+  }
+
+  getByVendor(vendor:String):any{
+    return this.http.get(environment.serverUrl+"shopify/byVendor/"+vendor+"/1")
   }
 
 }

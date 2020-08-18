@@ -24,11 +24,20 @@ import {
   ENTITY_FEATURE_KEY as AUTH_KEY
 } from "./reducers/auth";
 
+
+import {
+  State as RulesState,
+  reducer as RulesReducer,
+  ENTITY_FEATURE_KEY as RULE_KEY
+} from "./reducers/rules";
+
 import { EntityEffects as UserEffects } from "./effects/users";
 
 import { EntityEffects as AuthEffects } from "./effects/auth";
 
 import { EntityEffects as SupplierEffects } from "./effects/suppliers";
+
+import { EntityEffects as RulesEffects } from "./effects/rules";
 
 export interface RouterStateUrl {
   url: string;
@@ -67,6 +76,7 @@ export interface AppState {
   [USER_KEY]: UsersState;
   [SUPPLIER_KEY]: SuppliersState;
   [AUTH_KEY]: AuthState;
+  [RULE_KEY]: RulesState;
 }
 
 /**
@@ -78,7 +88,8 @@ const reducers: ActionReducerMap<AppState> = {
   router: fromRouter.routerReducer,
   [USER_KEY]: UsersReducers,
   [SUPPLIER_KEY]: SuppliersReducers,
-  [AUTH_KEY]: AuthReducer
+  [AUTH_KEY]: AuthReducer,
+  [RULE_KEY]: RulesReducer
 };
 
 /**
@@ -102,4 +113,4 @@ export const REDUCER_TOKEN = new InjectionToken<ActionReducerMap<AppState>>(
   }
 );
 
-export const appEffects = [UserEffects,AuthEffects,SupplierEffects];
+export const appEffects = [UserEffects,AuthEffects,SupplierEffects,RulesEffects];

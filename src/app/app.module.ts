@@ -24,7 +24,6 @@ import { appEffects, REDUCER_TOKEN } from "./store";
 import { environment } from "../environments/environment";
 
 //modules
-
 import { SearchService } from "./services/search.service"
 import { FilesService } from "./services/files.service"
 import { AuthInterceptor } from './utils/auth-interceptor';
@@ -32,6 +31,10 @@ import { JwtHelperService, JWT_OPTIONS  } from '@auth0/angular-jwt';
 
 
 import { localStorageSync } from 'ngrx-store-localstorage';
+
+
+
+
 
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {

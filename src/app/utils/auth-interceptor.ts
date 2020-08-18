@@ -15,6 +15,14 @@ constructor(private store: Store<any>){}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
+        if(req.url.includes("auth"))
+        {
+            //console.log("include auth")
+
+            return next.handle(req);
+        }
+
+
         return this.token$.pipe(
             mergeMap((token: string) => {
                 //console.log("token",token)

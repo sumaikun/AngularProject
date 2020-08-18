@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, Output, EventEmitter } from '@angular/core';
 import { ROUTES } from '../sidebar/sidebar.component';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { Router } from '@angular/router';
@@ -26,6 +26,8 @@ export class NavbarComponent implements OnInit {
   user$ =  this.store.pipe(select(selectUser));
 
   userPicture:string
+
+ 
 
   constructor(location: Location,
       private element: ElementRef,

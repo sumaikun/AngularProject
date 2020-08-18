@@ -1,6 +1,6 @@
 <!-- Sidenav -->
-<app-sidebar></app-sidebar>
-<div class="main-content">
+<app-sidebar (collapseMenu)="onCollapseMenu($event)"></app-sidebar>
+<div class="main-content" id="content-app">
   <!-- Top navbar -->
   <app-navbar></app-navbar>
   <!-- Pages -->

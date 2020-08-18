@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  serverUrl: 'http://localhost:3000/',
-  imagesUrl: 'http://localhost:3000/files/',
+  serverUrl:  location.hostname === "localhost" || location.hostname === "127.0.0.1" ? 'http://localhost:3000/' : 'http://198.12.230.76:3000/',
+  imagesUrl: location.hostname === "localhost" || location.hostname === "127.0.0.1" ? 'http://localhost:3000/files/' : 'http://198.12.230.76:3000/files/',
   defaultImage: "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png?format=jpg&quality=90&v=1530129081"
 };
 
@@ -17,3 +17,5 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+
+

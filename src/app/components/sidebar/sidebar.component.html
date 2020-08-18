@@ -26,7 +26,7 @@
         <a class="nav-link" role="button" ngbDropdownToggle>
           <div class="media align-items-center">
             <span class="avatar avatar-sm rounded-circle">
-              <img alt="Image placeholder" src="./assets/img/theme/team-1-800x800.jpg">
+              <img alt="Image placeholder" style="width:30px;height:30px;" [src]="userPicture">
             </span>
           </div>
         </a>
@@ -65,7 +65,7 @@
         <div class="row">
           <div class="col-6 collapse-brand">
             <a  routerLinkActive="active" [routerLink]="['/dashboard']">
-              <img src="./assets/img/brand/blue.png">
+              <img src="./assets/img/brand/branduu_icon.png">
             </a>
           </div>
           <div class="col-6 collapse-close">
@@ -121,6 +121,10 @@
         </li>
       </ul>
       -->
+      <div style="cursor: grab;"  (click)="closeMenu()">
+        <i class="ni ni-bold-up"></i>
+        <span id="close_indicator">Cerrar</span>
+      </div>
     </div>
   </div>
 </nav>
