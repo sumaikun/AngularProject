@@ -134,8 +134,9 @@
           </ng-select>  
         </div>
         
-        <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'REPLACE' ) || rule.ruleType === 'PRICES' " >
-            <label>Si</label>
+        <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType ) " >
+            <label *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'REPLACE' ) " >Si</label>
+            <label *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'DELETE' ) ">Palabra a eliminar</label>
             <textarea class="form-control" [(ngModel)]="rule.if" disabled="{{isFormDisabled}}"></textarea>                  
         </div>
 
@@ -144,13 +145,16 @@
           <input type="number"  [(ngModel)]="rule.similarity" min="0" max="100" class="form-control" disabled="{{isFormDisabled}}">    
         </div>
 
-        <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'REPLACE' ) || rule.ruleType === 'PRICES' " >
-            <label *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'REPLACE' ) || rule.ruleType === 'PRICES' " >Entonces</label>
-            <label *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'DELETE' ) ">Palabra a eliminar</label>
+        <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'REPLACE' )  " >
+            <label>Entonces</label>           
             <input type="text" [(ngModel)]="rule.then"   class="form-control">   
         </div>
+        
 
-       
+        <div class="form-group" *ngIf=" (rule.ruleType === 'PRICES' )  " >
+          <label>Formula</label>
+          <input type="text" [(ngModel)]="rule.then"   class="form-control">   
+        </div>     
 
 
      

@@ -142,7 +142,7 @@ export class RulesComponent implements OnInit {
       )
     }
 
-    if(this.rule.ruleType === "GRAMMAR_CORRECTION" && this.rule.operationType === "DELETE" &&  !this.rule.then  )
+    if(this.rule.ruleType === "GRAMMAR_CORRECTION" && this.rule.operationType === "DELETE" &&  !this.rule.if  )
     {
       return Swal.fire(
         'Espera',
@@ -151,7 +151,7 @@ export class RulesComponent implements OnInit {
       )
     }
 
-    if(this.rule.ruleType === "PRICES" && ( !this.rule.if || !this.rule.then ) )
+    if(this.rule.ruleType === "PRICES" && (  !this.rule.then ) )
     {
       return Swal.fire(
         'Espera',

@@ -111,3 +111,35 @@ td {
       transform: rotate(360deg);
     }
   }
+
+  table{
+    margin-left: 15px;
+  }
+
+  table th {
+    position: -webkit-sticky; // this is for all Safari (Desktop & iOS), not for Chrome
+    position: sticky;
+    top: 0;
+    z-index: 5;    
+  }
+
+  table  td { padding: 10px; }
+
+
+  #scrollarea-invalid {
+    height: 550px;
+    }
+    #scrollarea-content{
+      min-height:101%;
+  }
+
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+  }

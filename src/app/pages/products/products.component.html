@@ -5,7 +5,7 @@
         <div class="row">
 
           <div *ngFor="let entity of  entities$|async; let i = index" style="padding:20px"  class="col-xl-3 col-sm-4 col-md-4 col-lg-6">
-            <div class="card card-stats mb-4 mb-xl-0" style="cursor:grab" (click)="getShopifyProductsByVendor(entity.vendorId)" >
+            <div class="card card-stats mb-4 mb-xl-0" style="cursor:grab" (click)="getShopifyProductsByVendor(entity.vendorId,entity)" >
               <div class="card-body">
                 <div class="row">
                   <div class="col">
@@ -82,7 +82,7 @@
            
             <div *ngIf="loading" class="loader" style="background:black" >Loading...</div>
            
-            <div *ngIf="loading == false" class="table-responsive">
+            <div *ngIf="loading == false" class="table-responsive" id="scrollarea-invalid">
             
               <div class="row" *ngIf="viewMode === 'miniature' ">
                   <div  *ngFor=" let product of  products " class="col-lg-4 col-md-6 col-sm-6" >
@@ -98,7 +98,7 @@
                 
               </div>
 
-              <div class="row" *ngIf="viewMode === 'list' ">
+              <div class="row" *ngIf="viewMode === 'list' " id="scrollarea-content" >
 
                 <table class="table align-items-center table-flush">
                   <thead class="thead-light">
@@ -115,7 +115,7 @@
                   </thead>
                   <tbody>
                     <!--<tr *ngFor="let entity of (entities$ | async)">-->
-                    <tr *ngFor=" let product of  products ">
+                    <tr *ngFor=" let product of  products "  [ngStyle]="{'background-color': (product.mode=='test') ? 'cornsilk' : 'white'}" > 
                       <td>
                         <div class="pictureCell">
                         <a href="javascript:void(0)" (click)="ShowPictureByUrl(product.image?.src)"  
@@ -170,10 +170,17 @@
                 </table>
 
               </div>
-              
+
+        
             
             
             </div>
+
+            <div>
+              <br/>
+              <button type="button"  (click)="openRulesModal()" class="btn btn-default">Probar reglas</button>
+            </div>
+            
             
             
           </div>
@@ -227,5 +234,50 @@
       <!--
       <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
       -->  
+    </div>
+  </ng-template>
+
+
+
+  <ng-template #content2 let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Reglas disponibles</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="table-responsive">
+        <table class="table align-items-center table-dark table-flush">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">regla</th>
+              <th scope="col">operación</th>
+              <th scope="col">campos</th>
+              <th scope="col">si/entonces</th>
+              <th scope="col">similaridad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor=" let rule of  supplierRules " >               
+              <td>
+                <div class="form-check">
+                  <input type="checkbox"(change)="onCheckChange2(rule, $event.target.checked)" [checked]="isItemChecked(rule.id)">
+                  <label class="form-check-label" style="margin-left: 5px;" for="exampleCheck1">{{ rule.ruleType  }}</label>
+                </div> 
+              </td>
+              <td>{{ rule.operationType }}</td>
+              <td>{{ rule.selectedFields }}</td>
+              <td>{{ rule.if }} / {{ rule.then }}</td>
+              <td>{{ rule.similarity }}</td>
+            </tr>
+          </tbody>
+        </table> 
+      </div>
+    </div>
+    <div class="modal-footer">     
+      
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Probar</button>
+        
     </div>
   </ng-template>
