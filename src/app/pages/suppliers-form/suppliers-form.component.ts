@@ -135,7 +135,9 @@ export class SuppliersFormComponent implements OnInit {
 
           //delete entity["password"]
 
-          this.checkoutForm = this.formBuilder.group( entity )
+          const entitySupplier = new Supplier()
+
+          this.checkoutForm = this.formBuilder.group( {  ...entitySupplier, ...entity } )
           
           if(entity.photoUrl){this.supplierImage = environment.imagesUrl+entity.photoUrl}
           
