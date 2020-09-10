@@ -76,7 +76,8 @@
                     <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
                       <a class="dropdown-item" (click)="watchRecord(entity)" href="javascript:void(0)">Ver</a>
                       <a class="dropdown-item" (click)="editRecord(entity)" href="javascript:void(0)">Editar</a>
-                      <a class="dropdown-item"  href="javascript:void(0)">Clonar</a>
+                      <a class="dropdown-item" (click)="openCloneModal(entity)"   href="javascript:void(0)">Clonar</a>
+                      <a class="dropdown-item" (click)="watchRecord(entity)" href="javascript:void(0)">Versiones anteriores</a>
                     </div>
                   </div>
                 </td>
@@ -107,6 +108,7 @@
                 <option>Selecciona</option>
                 <option value="GRAMMAR_CORRECTION" >Corrección gramatical</option>
                 <option value="PRICES" >Precios</option>
+                <option value="COLOR" >Color</option>
             </select>          
         </div>
 
@@ -124,20 +126,34 @@
               <option>Selecciona</option>
               <option value="REPLACE" >Reemplazar</option>
               <option value="DELETE" >Eliminar</option>
+              <option value="ADD" >Agregar</option>
           </select>          
         </div>
 
+        <div class="form-group" *ngIf="rule.ruleType === 'GRAMMAR_CORRECTION'  && rule.operationType == 'ADD' " >
+          <label>Cambos en los que buscar</label>
+          <ng-select [multiple]="true" [(ngModel)]="rule.fieldsToCheck" [disabled]="isFormDisabled" >
+            <ng-option *ngFor="let field of shopifyFields" [value]="field.id" >{{field.name}}</ng-option>
+          </ng-select>  
+        </div>
+
         <div class="form-group" *ngIf="rule.ruleType === 'GRAMMAR_CORRECTION' " >
-          <label>Campos relacionados</label>
+          <label *ngIf="rule.operationType != 'ADD'">Campos relacionados</label>
+          <label *ngIf="rule.operationType == 'ADD'">Campos a modificar</label>
           <ng-select [multiple]="true" [(ngModel)]="rule.selectedFields" [disabled]="isFormDisabled" >
             <ng-option *ngFor="let field of shopifyFields" [value]="field.id" >{{field.name}}</ng-option>
           </ng-select>  
         </div>
         
         <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType ) " >
-            <label *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'REPLACE' ) " >Si</label>
+            <label *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && ( rule.operationType === 'REPLACE' || rule.operationType === 'ADD'  ) ) " >Si</label>
             <label *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'DELETE' ) ">Palabra a eliminar</label>
             <textarea class="form-control" [(ngModel)]="rule.if" disabled="{{isFormDisabled}}"></textarea>                  
+        </div>
+
+        <div class="form-group" *ngIf=" rule.ruleType === 'COLOR' " >
+          <label>Si option contiene palabra</label>
+          <textarea class="form-control" [(ngModel)]="rule.if" disabled="{{isFormDisabled}}"></textarea>                  
         </div>
 
         <div class="form-group" *ngIf="rule.ruleType === 'GRAMMAR_CORRECTION' " >
@@ -145,15 +161,20 @@
           <input type="number"  [(ngModel)]="rule.similarity" min="0" max="100" class="form-control" disabled="{{isFormDisabled}}">    
         </div>
 
-        <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'REPLACE' )  " >
+        <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && ( rule.operationType === 'REPLACE' || rule.operationType === 'ADD' ))  " >
             <label>Entonces</label>           
-            <input type="text" [(ngModel)]="rule.then"   class="form-control">   
+            <input type="text" [(ngModel)]="rule.then"  [disabled]="isFormDisabled"  class="form-control">   
         </div>
         
+        <div class="form-group" *ngIf=" rule.ruleType === 'COLOR' " >
+          <label>Color a cambiar</label>           
+          <input type="color" [(ngModel)]="rule.then"  [disabled]="isFormDisabled"  class="form-control">   
+        </div>
+      
 
         <div class="form-group" *ngIf=" (rule.ruleType === 'PRICES' )  " >
           <label>Formula</label>
-          <input type="text" [(ngModel)]="rule.then"   class="form-control">   
+          <input type="text" [(ngModel)]="rule.then" [disabled]="isFormDisabled"  class="form-control">   
         </div>     
 
 
@@ -161,5 +182,29 @@
     </div>
     <div class="modal-footer">
       <button *ngIf=" isFormDisabled === false" type="button" class="btn btn-outline-dark" (click)="checkRuleToSave()">Guardar</button>
+    </div>
+  </ng-template>
+
+
+  <ng-template #content2 let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Catalogo al que se va a clonar</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      
+        <div class="form-group">
+          <label>Catalogo</label>
+          <select class="form-control"   [(ngModel)]="supplierToClone" disabled="{{isFormDisabled}}">
+              <option>Selecciona</option>
+              <option *ngFor="let supplier of  suppliers$|async;" value="{{ supplier.id }}" >{{ supplier.name }}</option>
+          </select>          
+      </div>
+      
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
     </div>
   </ng-template>

@@ -1,0 +1,70 @@
+.centerContent{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+// Small devices (landscape phones, 576px and up)
+@media (max-width: 576px) { 
+    .table-responsive-query{
+        overflow: auto;
+        width: 100%;
+    }
+ }
+
+// Medium devices (tablets, 768px and up)
+@media (max-width: 768px) {
+    .table-responsive-query{
+        overflow: auto;
+        width: 100%;
+    }
+}
+
+@media (max-width: 1400px) {
+    .table-responsive-query{
+        overflow: auto;
+        width: 100%;
+    }
+}
+
+.pictureCell{
+    display: flex;
+    align-items: center;
+}
+
+
+/* Sets the containers height and width */
+.base-timer {
+    position: relative;
+    height: 150px;
+    width: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Removes SVG styling that would hide the time label */
+  .base-timer__circle {
+    fill: none;
+    stroke: none;
+  }
+  
+  /* The SVG path that displays the timer's progress */
+  .base-timer__path-elapsed {
+    stroke-width: 7px;
+    stroke: grey;
+  }
+  
+  .card-body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 15px;
+    background-color: #333364;
+    color: white;
+  }
+
+  .base-timer__svg{
+      position: absolute;
+  }

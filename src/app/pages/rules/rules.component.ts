@@ -22,6 +22,8 @@ export class RulesComponent implements OnInit {
 
   @ViewChild('content') content:ElementRef;
 
+  @ViewChild('content2') content2:ElementRef;
+
   suppliers$ = this.store.pipe(select(selectAll));
 
   rule:any
@@ -31,6 +33,10 @@ export class RulesComponent implements OnInit {
   suppliers: any[]
 
   isFormDisabled:boolean
+
+  rules: any[]
+
+  supplierToClone:string
 
   constructor(private modalService: NgbModal,
     private store: Store<any>) { }
@@ -47,12 +53,18 @@ export class RulesComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.store.dispatch(RulesActions.offLoad());
+
     this.store.dispatch(SuppliersActions.loadSuppliers());
 
     this.store.dispatch(RulesActions.loadRules());
 
     this.suppliers$.subscribe( data => {
       this.suppliers = data
+    })
+
+    this.entities$.subscribe( data => {
+      this.rules = data
     })
 
     this.rule = {
@@ -66,6 +78,39 @@ export class RulesComponent implements OnInit {
     }
 
     this.isFormDisabled = false
+
+    this.error$.subscribe( error => {
+      
+      if( this.buttonWasPressed ){
+        return Swal.fire(
+          'Espera',
+          'Sucedio un error',
+          'error'
+        )
+      }
+      
+    })
+
+    this.loaded$.subscribe( loaded => {
+
+      console.log("loaded",loaded,this.buttonWasPressed)
+
+      if(loaded && this.buttonWasPressed ){
+
+        this.buttonWasPressed = false
+
+        let self = this
+
+        window.setTimeout(function(){ self.store.dispatch(RulesActions.loadRules()); }, 1000)
+        
+
+        return Swal.fire(
+          'Bien',
+          'Datos registrados',
+          'success'
+        )
+      }
+    })    
 
   }
 
@@ -81,6 +126,7 @@ export class RulesComponent implements OnInit {
       supplier:null,
       operationType:null,
       selectedFields:[],
+      fieldsToCheck:[],
       if:null,
       then:null,
       similarity:null
@@ -133,7 +179,8 @@ export class RulesComponent implements OnInit {
       )
     }
 
-    if(this.rule.ruleType === "GRAMMAR_CORRECTION" && this.rule.operationType === "REPLACE" && ( !this.rule.if || !this.rule.then ) )
+    if(this.rule.ruleType === "GRAMMAR_CORRECTION" && ( this.rule.operationType === "REPLACE" || this.rule.operationType === "ADD" )
+     && ( !this.rule.if || !this.rule.then ) )
     {
       return Swal.fire(
         'Espera',
@@ -160,6 +207,37 @@ export class RulesComponent implements OnInit {
       )
     }
 
+     if(this.rule.ruleType === "COLOR" && (  !this.rule.if  && !this.rule.then ) )
+    {
+      return Swal.fire(
+        'Espera',
+        'Para reemplazar el color debes tener todos los campos',
+        'warning'
+      )
+    }
+
+
+    if((this.rule.ruleType === "PRICES" && !this.rule.then.includes("price*"))){
+      return Swal.fire(
+        'Espera',
+        'La regla de precios debe incluir las palabras price*',
+        'warning'
+      )
+    }
+
+
+    if((this.rule.ruleType === "PRICES" && this.rule.then.includes("price*"))){
+      const numberToMultiply = this.rule.then.replace("price*", '')
+      if (!Number.isInteger(numberToMultiply)) {
+        return Swal.fire(
+          'Espera',
+          'Después de la palabra price*  debe aparecer un número, no se reconocio el número',
+          'warning'
+        )
+      }
+    }
+    
+
     if(this.rule.ruleType === "GRAMMAR_CORRECTION" && this.rule.similarity && (this.rule.similarity < 0 
      || this.rule.similarity > 100 ) )
      {
@@ -170,8 +248,38 @@ export class RulesComponent implements OnInit {
       )
      }
 
-    this.saveRule(this.rule)
-    
+     const exist = this.checkIfRuleExist(this.rule)
+
+     console.log("exist",exist)
+
+     if(exist.length == 0)
+     {
+        this.saveRule(this.rule)    
+     }
+     else{
+      
+      switch (exist) {
+        case "field exist on another rule":
+          
+          return Swal.fire(
+            'Espera',
+            'Uno de los valores (si) ya existe en otra regla para el mismo catálogo, edite esta regla siquiere cambiarla',
+            'warning'
+          )
+
+        case "field exist with same then":
+          return Swal.fire(
+            'Espera',
+            'La conclusión (then) ya existe en otra regla para el mismo catálogo, no es necesario crear una nueva editela',
+            'warning'
+          )
+      }
+
+     }
+
+     //console.log("test",this.rule.if.split(","))
+
+    //
 
   }
 
@@ -196,7 +304,9 @@ export class RulesComponent implements OnInit {
       console.log("create action")
       this.store.dispatch(RulesActions.createRule({ data:ruleData }))
     
-    } 
+    }    
+
+    this.modalService.dismissAll()
 
     this.loaded$.subscribe( loaded => {
 
@@ -219,7 +329,51 @@ export class RulesComponent implements OnInit {
       }
     })    
 
-    this.modalService.dismissAll()
+  }
+
+  checkIfRuleExist(rule){
+
+    let exist = ""
+
+      if(rule.ruleType === "GRAMMAR_CORRECTION")
+      {
+        const results = this.rules.filter( frule => frule.ruleType === rule.ruleType &&
+           frule.operationType === rule.operationType  && frule.supplier === rule.supplier ) 
+           
+        console.log("results",results)
+        
+        results.map( result =>  {
+          rule.selectedFields.map( field => {
+            if(result.selectedFields.includes(field) && rule.id != result.id ){
+              exist = "field exist on another rule"
+            }
+          })
+        })
+
+        const results2 = this.rules.filter( frule =>  frule.ruleType === rule.ruleType && 
+          frule.then === rule.then && frule.supplier === rule.supplier && rule.id != frule.id  )
+
+        console.log("results2",results2)
+
+        if(results2.length > 0)
+        {
+          exist = "field exist with same then"
+        }
+
+      }
+      
+      if(rule.ruleType === "PRICES" || rule.ruleType === "COLOR")
+      {
+        const results2 = this.rules.filter( frule => frule => frule.ruleType === rule.ruleType && 
+          frule.then === rule.then && frule.supplier === rule.supplier )
+
+        if(results2.length > 0)
+        {
+          exist = "field exist with same then"
+        }
+      }
+
+    return exist
 
   }
 
@@ -237,6 +391,9 @@ export class RulesComponent implements OnInit {
         break;
       case 'PRICES':
         expr = "Corrección de precios"
+        break;
+      case 'COLOR':
+        expr = "Corrección de color"
         break;
       default:
         expr = ""
@@ -256,7 +413,8 @@ export class RulesComponent implements OnInit {
       selectedFields:rule.selectedFields,
       if:rule.if,
       then:rule.then,
-      similarity:rule.similarity
+      similarity:rule.similarity,
+      fieldsToCheck:rule.fieldsToCheck
     }
 
     this.openModal()
@@ -274,12 +432,75 @@ export class RulesComponent implements OnInit {
       selectedFields:rule.selectedFields,
       if:rule.if,
       then:rule.then,
-      similarity:rule.similarity
+      similarity:rule.similarity,
+      fieldsToCheck:rule.fieldsToCheck
     }
 
     this.openModal()
 
     this.isFormDisabled = false
+  }
+
+  openCloneModal( rule ){
+    this.supplierToClone = "" 
+    this.modalService.open(this.content2, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
+      console.log("result",result,rule)
+      
+      if(!this.supplierToClone){
+        return Swal.fire(
+          'Espera',
+          'Debes seleccionar un proveedor para continuar',
+          'warning'
+        )
+      }
+      else{
+
+        const newRuleToSave = {
+          fieldsToCheck: rule.fieldsToCheck,
+          id: null,
+          if: rule.if,
+          operationType: rule.operationType,
+          ruleType: rule.ruleType,
+          selectedFields: rule.selectedFields,
+          similarity: rule.similarity,
+          supplier: this.supplierToClone,
+          then: rule.then
+        }
+
+        const exist = this.checkIfRuleExist(newRuleToSave)
+
+        console.log("exist",exist)
+
+        if(exist.length == 0)
+        {
+            this.saveRule(newRuleToSave)    
+        }
+        else{
+          
+          switch (exist) {
+            case "field exist on another rule":
+              
+              return Swal.fire(
+                'Espera',
+                'Uno de los valores (si) ya existe en otra regla para el mismo catálogo, edite esta regla siquiere cambiarla',
+                'warning'
+              )
+
+            case "field exist with same then":
+              return Swal.fire(
+                'Espera',
+                'La conclusión (then) ya existe en otra regla para el mismo catálogo, no es necesario crear una nueva editela',
+                'warning'
+              )
+          }
+        }
+
+
+      }
+      
+    }, (reason) => {
+      console.log("reason",reason)
+    });
   }
 
 

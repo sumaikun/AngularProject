@@ -11,11 +11,11 @@ import { PictureModalComponent } from '../../components/picture-modal/picture-mo
 import { environment } from '../../../environments/environment'
 
 @Component({
-  selector: 'app-suppliers-form',
-  templateUrl: './suppliers-form.component.html',
-  styleUrls: ['./suppliers-form.component.scss']
+  selector: 'app-chronos-form',
+  templateUrl: './chronos-form.component.html',
+  styleUrls: ['./chronos-form.component.scss']
 })
-export class SuppliersFormComponent implements OnInit {
+export class ChronosFormComponent implements OnInit {
 
   @ViewChild('supplierForm') supplierFormElement;
 

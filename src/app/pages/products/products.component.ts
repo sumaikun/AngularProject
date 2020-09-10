@@ -23,6 +23,8 @@ export class ProductsComponent implements OnInit {
 
   @ViewChild('content2') content2:ElementRef;
 
+  originalProducts: any
+
   products:any
 
   entities$ = this.store.pipe(select(selectAllEntities));
@@ -43,6 +45,10 @@ export class ProductsComponent implements OnInit {
 
   idsChecked:Array<string>
 
+  textToSearch: string
+
+  page: number
+
   constructor(private shopifyService: ShopifyService,
     private rulesService: RulesService,
     private router: Router,private store: Store<any>,
@@ -50,28 +56,30 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.page = 1
+
     this.loading = true
 
     this.appENV = environment
 
     this.shopifyService.getProducts().subscribe( products => {
 
+        this.products = products.products
 
-      this.products = products.products.sort(function (a, b) {
-        if (a.id > b.id) {
-          return 1;
-        }
-        if (a.id < b.id) {
-          return -1;
-        }
-        // a must be equal to b
-        return 0;
-      })
+        //this.originalProducts = products.products
 
-      this.loading = false
+        this.loading = false
 
-
-    }) 
+      },
+      error => {
+        console.log(error)
+        return Swal.fire(
+          'Espera',
+          'Sucedio un error en el servidor',
+          'error'
+        )
+      },    
+    )
 
     this.store.dispatch(SuppliersActions.loadSuppliers());
 
@@ -105,22 +113,32 @@ export class ProductsComponent implements OnInit {
   }
 
   getShopifyProductsByVendor(vendor:string,currentSupplier:any):void{
-    this.idsChecked = []
-    this.loading = true
-    this.shopifyService.getByVendor(vendor).subscribe( products => {
-      this.products = products.products.sort(function (a, b) {
-        if (a.id > b.id) {
-          return 1;
-        }
-        if (a.id < b.id) {
-          return -1;
-        }
-        // a must be equal to b
-        return 0;
-      })
-      this.loading = false
-    }) 
-    this.currentSupplier = currentSupplier
+
+    if(this.loading === false)
+    {
+        this.idsChecked = []
+        this.loading = true
+        this.shopifyService.getCountByVendor(vendor).subscribe( count => {
+          console.log("count",count)
+        },error=>{
+          this.loading = false
+          return Swal.fire(
+            'Espera',
+            'Sucedio un error en el servidor',
+            'error'
+          )
+        }) 
+        this.shopifyService.getByVendor(vendor).subscribe( products => {
+          this.products = products.products
+
+          this.originalProducts = products.products
+
+          this.loading = false
+
+        }) 
+        this.currentSupplier = currentSupplier
+    }
+    
   }
 
   openCell(event){
@@ -174,7 +192,9 @@ export class ProductsComponent implements OnInit {
         )
       }
       else{
-        this.rulesService.testRules(  this.idsChecked, this.products ).subscribe( 
+
+
+        this.rulesService.testRules(  this.idsChecked, this.products.filter( product => !product.mode ) ).subscribe( 
           (data: Array<any>)  => 
             {
               console.log(data)
@@ -215,5 +235,151 @@ export class ProductsComponent implements OnInit {
     return this.idsChecked.includes(id)
   }
 
+  fullList(){
+    //console.log(this.textToSearch)
+    if(this.textToSearch)
+    {
+      return this.products.filter(  product => 
+        product.title?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.body_html?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.vendor?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.product_type?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.handle?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase())
+      ).sort(function (a, b) {
+        if (a.id > b.id) {
+          return 1;
+        }
+        if (a.id < b.id) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      })  
+    }
+    return this.products.sort(function (a, b) {
+      if (a.id > b.id) {
+        return 1;
+      }
+      if (a.id < b.id) {
+        return -1;
+      }
+      // a must be equal to b
+      return 0;
+    })
+  }
+
+  filteredByPure(){
+    if(this.textToSearch)
+    {
+      return this.products.filter( product => !product.mode ).filter(  product => 
+        product.title?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.body_html?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.vendor?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.product_type?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.handle?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase())
+      ).sort(function (a, b) {
+        if (a.id > b.id) {
+          return 1;
+        }
+        if (a.id < b.id) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      })  
+    }
+    return this.products.filter( product => !product.mode ).sort(function (a, b) {
+      if (a.id > b.id) {
+        return 1;
+      }
+      if (a.id < b.id) {
+        return -1;
+      }
+      // a must be equal to b
+      return 0;
+    })   
+  }
+
+  filteredByTest(){
+    if(this.textToSearch)
+    {
+      return this.products.filter( product => product.mode === "test" ).filter(  product => 
+        product.title?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.body_html?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.vendor?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.product_type?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.handle?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase())
+      ).sort(function (a, b) {
+        if (a.id > b.id) {
+          return 1;
+        }
+        if (a.id < b.id) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      })  
+    }
+    return this.products.filter( product => product.mode === "test" ).sort(function (a, b) {
+      if (a.id > b.id) {
+        return 1;
+      }
+      if (a.id < b.id) {
+        return -1;
+      }
+      // a must be equal to b
+      return 0;
+    })   
+  }
+
+  onTabChange(){
+
+  }
+
+  onSearchChange(text):void{
+    //console.log(text)
+    this.textToSearch = text
+
+  }
+
+  clickDirection(direction:String):void{
+
+    let lastID
+
+    this.loading = true
+    
+    //console.log("avaliableProducts",avaliableProducts,this.currentSupplier)
+
+    if(direction == "next")
+    {
+      lastID = this.originalProducts[ this.originalProducts.length - 1 ].id
+    }else{
+      lastID = this.originalProducts[0].id
+    }
+
+    this.shopifyService.getByVendorDirection( this.currentSupplier.vendorId, lastID, direction ).subscribe( products => {
+      
+      this.products = products.products
+      this.loading = false
+
+    })
+  }
+
 
 }
+
+
+/*.sort(function (a, b) {
+        if (a.id > b.id) {
+          return 1;
+        }
+        if (a.id < b.id) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      })
+ */

@@ -31,6 +31,13 @@ import {
   ENTITY_FEATURE_KEY as RULE_KEY
 } from "./reducers/rules";
 
+
+import {
+  State as ChronosState,
+  reducer as ChronosReducer,
+  ENTITY_FEATURE_KEY as CHRONOS_KEY
+} from "./reducers/chronos";
+
 import { EntityEffects as UserEffects } from "./effects/users";
 
 import { EntityEffects as AuthEffects } from "./effects/auth";
@@ -38,6 +45,8 @@ import { EntityEffects as AuthEffects } from "./effects/auth";
 import { EntityEffects as SupplierEffects } from "./effects/suppliers";
 
 import { EntityEffects as RulesEffects } from "./effects/rules";
+
+import { EntityEffects as ChronosEffects } from "./effects/chronos";
 
 export interface RouterStateUrl {
   url: string;
@@ -77,6 +86,7 @@ export interface AppState {
   [SUPPLIER_KEY]: SuppliersState;
   [AUTH_KEY]: AuthState;
   [RULE_KEY]: RulesState;
+  [CHRONOS_KEY]: ChronosState;
 }
 
 /**
@@ -89,7 +99,8 @@ const reducers: ActionReducerMap<AppState> = {
   [USER_KEY]: UsersReducers,
   [SUPPLIER_KEY]: SuppliersReducers,
   [AUTH_KEY]: AuthReducer,
-  [RULE_KEY]: RulesReducer
+  [RULE_KEY]: RulesReducer,
+  [CHRONOS_KEY]: ChronosReducer
 };
 
 /**
@@ -113,4 +124,4 @@ export const REDUCER_TOKEN = new InjectionToken<ActionReducerMap<AppState>>(
   }
 );
 
-export const appEffects = [UserEffects,AuthEffects,SupplierEffects,RulesEffects];
+export const appEffects = [UserEffects,AuthEffects,SupplierEffects,RulesEffects,ChronosEffects];

@@ -69,16 +69,31 @@
           </div>
           <div class="card-body">
 
-            <div class="custom-control custom-radio mb-3">
-              <input (change)="onCheckChange('list', $event.target.checked)" [checked]="viewMode === 'list'"
-               name="custom-radio-2" class="custom-control-input" id="customRadio5" type="radio">
-              <label class="custom-control-label" for="customRadio5">Lista</label>
+            <div class="row">
+              
+              <div class="col-lg-6 col-md-6">
+                <div class="custom-control custom-radio mb-3">
+                  <input (change)="onCheckChange('list', $event.target.checked)" [checked]="viewMode === 'list'"
+                   name="custom-radio-2" class="custom-control-input" id="customRadio5" type="radio">
+                  <label class="custom-control-label" for="customRadio5">Lista</label>
+                </div>
+                <div class="custom-control custom-radio mb-3">
+                  <input (change)="onCheckChange('miniature', $event.target.checked)" [checked]="viewMode === 'miniature'"
+                  name="custom-radio-2" class="custom-control-input" id="customRadio6" type="radio">
+                  <label class="custom-control-label" for="customRadio6">Miniatura</label>
+                </div>
+              </div>
+  
+              <div class="col-lg-6 col-md-6">
+                <input class="form-control" placeholder="Buscar"
+                type="text" (focus)="focus = true"
+                (input)="onSearchChange($event.target.value)"
+                (blur)="focus = false">
+              </div>
+
             </div>
-            <div class="custom-control custom-radio mb-3">
-              <input (change)="onCheckChange('miniature', $event.target.checked)" [checked]="viewMode === 'miniature'"
-              name="custom-radio-2" class="custom-control-input" id="customRadio6" type="radio">
-              <label class="custom-control-label" for="customRadio6">Miniatura</label>
-            </div>
+           
+
            
             <div *ngIf="loading" class="loader" style="background:black" >Loading...</div>
            
@@ -100,74 +115,238 @@
 
               <div class="row" *ngIf="viewMode === 'list' " id="scrollarea-content" >
 
-                <table class="table align-items-center table-flush">
-                  <thead class="thead-light">
-                    <tr>
-                      <th scope="col">id</th>
-                      <th scope="col">title</th>
-                      <th scope="col">body_html</th>
-                      <th scope="col">vendor</th>
-                      <th scope="col">product_type</th>
-                      <th scope="col">handle</th>
-                      <th scope="col">tags</th>
-                      <th scope="col">opciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <!--<tr *ngFor="let entity of (entities$ | async)">-->
-                    <tr *ngFor=" let product of  products "  [ngStyle]="{'background-color': (product.mode=='test') ? 'cornsilk' : 'white'}" > 
-                      <td>
-                        <div class="pictureCell">
-                        <a href="javascript:void(0)" (click)="ShowPictureByUrl(product.image?.src)"  
-                        class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
-                          <img style="width:30px;height: 30px;" alt="Image placeholder" 
-                            [src]="product.images[0]?.src"
-                            class="avatar rounded-circle">
-                        </a>
-                        <span style="margin-left: 15px;">{{ product.id }}</span>
-                        
-                        </div>
-                      </td>
+                <div class="container">      
+                    
+                  <ngb-tabset [destroyOnHide]="false" (tabChange)="onTabChange($event)" >
+                    
+                    <ngb-tab title="Lista combinada">
+                      <ng-template   ngbTabContent>
+                        <p>Esta lista incluye los datos originales y la simulación de arreglos</p>
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table align-items-center table-flush">
+                          <thead class="thead-light">
+                            <tr>
+                              <th scope="col">id</th>
+                              <th scope="col">title</th>
+                              <th scope="col">body_html</th>
+                              <th scope="col">vendor</th>
+                              <th scope="col">product_type</th>
+                              <th scope="col">handle</th>
+                              <th scope="col">tags</th>
+                              <th scope="col">opciones</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <!--<tr *ngFor="let entity of (entities$ | async)">-->
+                            <tr *ngFor=" let product of  fullList() "  [ngStyle]="{'background-color': (product.mode=='test') ? 'cornsilk' : 'white'}" > 
+                              <td>
+                                <div class="pictureCell">
+                                <a href="javascript:void(0)" (click)="ShowPictureByUrl(product.image?.src)"  
+                                class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                                  <img style="width:30px;height: 30px;" alt="Image placeholder" 
+                                    [src]="product.images[0]?.src"
+                                    class="avatar rounded-circle">
+                                </a>
+                                <span style="margin-left: 15px;">{{ product.id }}</span>
+                                
+                                </div>
+                              </td>
+        
+                              <td (dblclick)="openCell($event)">
+                                {{ product.title }}
+                              </td>
+        
+                              <td (dblclick)="openCell($event)">
+                                {{ product.body_html }}
+                              </td>
+        
+                              <td>
+                                <div>{{ product.vendor }}</div>
+                              </td>
+        
+                              <td>
+                                <div>{{ product.product_type }}</div>
+                              </td>
+        
+                              <td>
+                                <div>{{ product.handle }}</div>
+                              </td>
+        
+                              <td (dblclick)="openCell($event)">
+                                {{ product.tags }}
+                              </td>
+                                  
+                              <td class="text-right">
+                                <div ngbDropdown placement="bottom-right">
+                                  <a class="btn btn-sm btn-icon-only text-light"  ngbDropdownToggle>
+                                    <i class="fas fa-ellipsis-v"></i>
+                                  </a>
+                                  <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                                    <a class="dropdown-item" (click)="watchVariants(product)" href="javascript:void(0)">Ver variantes</a>
+                                  </div>
+                                </div>
+                              </td>
+        
+        
+                            </tr>
+                          </tbody>
+                        </table>
+                      </ng-template>
+                    </ngb-tab>
+                      
+                    <ngb-tab [disabled]="!currentSupplier">
+                      <ng-template ngbTabTitle>Lista</ng-template>
+                      <ng-template  ngbTabContent>
+                          <p>Esta lista incluye unicamente los datos originales</p>
+                          <table class="table align-items-center table-flush">
+                            <thead class="thead-light">
+                              <tr>
+                                <th scope="col">id</th>
+                                <th scope="col">title</th>
+                                <th scope="col">body_html</th>
+                                <th scope="col">vendor</th>
+                                <th scope="col">product_type</th>
+                                <th scope="col">handle</th>
+                                <th scope="col">tags</th>
+                                <th scope="col">opciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <!--<tr *ngFor="let entity of (entities$ | async)">-->
+                              <tr *ngFor=" let product of  filteredByPure() "  [ngStyle]="{'background-color': (product.mode=='test') ? 'cornsilk' : 'white'}" > 
+                                <td>
+                                  <div class="pictureCell">
+                                  <a href="javascript:void(0)" (click)="ShowPictureByUrl(product.image?.src)"  
+                                  class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                                    <img style="width:30px;height: 30px;" alt="Image placeholder" 
+                                      [src]="product.images[0]?.src"
+                                      class="avatar rounded-circle">
+                                  </a>
+                                  <span style="margin-left: 15px;">{{ product.id }}</span>
+                                  
+                                  </div>
+                                </td>
+          
+                                <td (dblclick)="openCell($event)">
+                                  {{ product.title }}
+                                </td>
+          
+                                <td (dblclick)="openCell($event)">
+                                  {{ product.body_html }}
+                                </td>
+          
+                                <td>
+                                  <div>{{ product.vendor }}</div>
+                                </td>
+          
+                                <td>
+                                  <div>{{ product.product_type }}</div>
+                                </td>
+          
+                                <td>
+                                  <div>{{ product.handle }}</div>
+                                </td>
+          
+                                <td (dblclick)="openCell($event)">
+                                  {{ product.tags }}
+                                </td>
+                                    
+                                <td class="text-right">
+                                  <div ngbDropdown placement="bottom-right">
+                                    <a class="btn btn-sm btn-icon-only text-light"  ngbDropdownToggle>
+                                      <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                                      <a class="dropdown-item" (click)="watchVariants(product)" href="javascript:void(0)">Ver variantes</a>
+                                    </div>
+                                  </div>
+                                </td>
+          
+          
+                              </tr>
+                            </tbody>
+                          </table>
+                      </ng-template>
+                    </ngb-tab>
+                      
+                    <ngb-tab [disabled]="!currentSupplier" >
+                      <ng-template ngbTabTitle>Correcciones</ng-template>
+                      <ng-template  ngbTabContent>
+                          <p>Esta lista incluye unicamente los datos simulados de corrección</p>
+                          <table class="table align-items-center table-flush">
+                            <thead class="thead-light">
+                              <tr>
+                                <th scope="col">id</th>
+                                <th scope="col">title</th>
+                                <th scope="col">body_html</th>
+                                <th scope="col">vendor</th>
+                                <th scope="col">product_type</th>
+                                <th scope="col">handle</th>
+                                <th scope="col">tags</th>
+                                <th scope="col">opciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <!--<tr *ngFor="let entity of (entities$ | async)">-->
+                              <tr *ngFor=" let product of  filteredByTest() "  [ngStyle]="{'background-color': (product.mode=='test') ? 'cornsilk' : 'white'}" > 
+                                <td>
+                                  <div class="pictureCell">
+                                  <a href="javascript:void(0)" (click)="ShowPictureByUrl(product.image?.src)"  
+                                  class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                                    <img style="width:30px;height: 30px;" alt="Image placeholder" 
+                                      [src]="product.images[0]?.src"
+                                      class="avatar rounded-circle">
+                                  </a>
+                                  <span style="margin-left: 15px;">{{ product.id - 1 }}</span>
+                                  
+                                  </div>
+                                </td>
+          
+                                <td (dblclick)="openCell($event)">
+                                  {{ product.title }}
+                                </td>
+          
+                                <td (dblclick)="openCell($event)">
+                                  {{ product.body_html }}
+                                </td>
+          
+                                <td>
+                                  <div>{{ product.vendor }}</div>
+                                </td>
+          
+                                <td>
+                                  <div>{{ product.product_type }}</div>
+                                </td>
+          
+                                <td>
+                                  <div>{{ product.handle }}</div>
+                                </td>
+          
+                                <td (dblclick)="openCell($event)">
+                                  {{ product.tags }}
+                                </td>
+                                    
+                                <td class="text-right">
+                                  <div ngbDropdown placement="bottom-right">
+                                    <a class="btn btn-sm btn-icon-only text-light"  ngbDropdownToggle>
+                                      <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                                      <a class="dropdown-item" (click)="watchVariants(product)" href="javascript:void(0)">Ver variantes</a>
+                                    </div>
+                                  </div>
+                                </td>
+          
+          
+                              </tr>
+                            </tbody>
+                          </table>
+                      </ng-template>
+                    </ngb-tab>                
+                      
+                  </ngb-tabset>
+                </div>
 
-                      <td (dblclick)="openCell($event)">
-                        {{ product.title }}
-                      </td>
-
-                      <td (dblclick)="openCell($event)">
-                        {{ product.body_html }}
-                      </td>
-
-                      <td>
-                        <div>{{ product.vendor }}</div>
-                      </td>
-
-                      <td>
-                        <div>{{ product.product_type }}</div>
-                      </td>
-
-                      <td>
-                        <div>{{ product.handle }}</div>
-                      </td>
-
-                      <td (dblclick)="openCell($event)">
-                        {{ product.tags }}
-                      </td>
-                          
-                      <td class="text-right">
-                        <div ngbDropdown placement="bottom-right">
-                          <a class="btn btn-sm btn-icon-only text-light"  ngbDropdownToggle>
-                            <i class="fas fa-ellipsis-v"></i>
-                          </a>
-                          <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
-                            <a class="dropdown-item" (click)="watchVariants(product)" href="javascript:void(0)">Ver variantes</a>
-                          </div>
-                        </div>
-                      </td>
-
-
-                    </tr>
-                  </tbody>
-                </table>
+               
 
               </div>
 
@@ -177,17 +356,50 @@
             </div>
 
             <div>
-              <br/>
-              <button type="button"  (click)="openRulesModal()" class="btn btn-default">Probar reglas</button>
-            </div>
-            
-            
+              <div class="row">
+                <div class="col-lg-3 col-md-3" >
+                  <br/>
+                  <button type="button"  (click)="openRulesModal()" class="btn btn-default">Probar reglas</button>
+                </div>
+                <div class="col-lg-3 col-md-3" >
+                  <br/>
+                  <nav aria-label="...">
+                    <ul class="pagination">
+                      <li class="page-item" (click)="clickDirection('prev')" >
+                        <a class="page-link" href="javascript:void(0)">
+                          <i class="fa fa-angle-left"></i>
+                          <span class="sr-only">Previous</span>
+                        </a>
+                      </li>
+                      
+                      <!--
+                      <li class="page-item"><a class="page-link" href="#">1</a></li>
+                      <li class="page-item active">
+                        <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+                      </li>
+                      <li class="page-item"><a class="page-link" href="#">3</a></li>
+                      -->
+
+                      <li class="page-item" (click)="clickDirection('next')" >
+                        <a class="page-link" href="javascript:void(0)">
+                          <i class="fa fa-angle-right"></i>
+                          <span class="sr-only">Next</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+             
+            </div>           
             
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  
   
 
   <app-picture-modal [picture]="supplierImage" ></app-picture-modal>

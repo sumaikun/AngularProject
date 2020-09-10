@@ -10,11 +10,19 @@ export class ShopifyService {
   constructor(public http: HttpClient) { }
 
   getProducts():any{
-    return this.http.get(environment.serverUrl+"shopify/allProducts/1")
+    return this.http.get(environment.serverUrl+"shopify/allProducts")
   }
 
   getByVendor(vendor:String):any{
-    return this.http.get(environment.serverUrl+"shopify/byVendor/"+vendor+"/1")
+    return this.http.get(environment.serverUrl+"shopify/byVendor/"+vendor)
+  }
+
+  getCountByVendor(vendor:String):any{
+    return this.http.get(environment.serverUrl+"shopify/countByVendor/"+vendor)
+  }
+
+  getByVendorDirection(vendor:String,lastID:String,direction:String):any{
+    return this.http.get(environment.serverUrl+"shopify/byVendorDirection/"+vendor+"/"+lastID+"/"+direction)
   }
 
 }

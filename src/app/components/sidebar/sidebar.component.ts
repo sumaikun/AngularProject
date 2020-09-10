@@ -16,6 +16,7 @@ export const ROUTES: RouteInfo[] = [
     { path: '/suppliers', title: 'Proveedores',  icon:'ni-pin-3 text-orange', class: '' },
     { path: '/products', title: 'Catalogos',  icon:'ni-cart text-pink', class: '' },
     { path: '/rules', title: 'Reglas',  icon:'ni-planet text-blue', class: '' },
+    { path: '/chronos', title: 'Crónograma',  icon:'ni-bullet-list-67 text-info', class: '' },
     /*{ path: '/icons', title: 'Icons',  icon:'ni-planet text-blue', class: '' },
     { path: '/maps', title: 'Maps',  icon:'ni-pin-3 text-orange', class: '' },
     { path: '/user-profile', title: 'User profile',  icon:'ni-single-02 text-yellow', class: '' },
