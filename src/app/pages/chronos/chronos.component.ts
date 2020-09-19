@@ -63,7 +63,7 @@ export class ChronosComponent implements OnInit, OnDestroy {
 
   idsChecked:Array<string>
 
-  interval:any  
+  intervals:any  
 
   countDowns:any
 
@@ -109,7 +109,7 @@ export class ChronosComponent implements OnInit, OnDestroy {
 
       this.countDowns = {}
 
-      this.interval = null
+      this.intervals = {}
 
     }
   
@@ -120,15 +120,32 @@ export class ChronosComponent implements OnInit, OnDestroy {
   
   
     watchRecord(entity): void {
-      this.store.dispatch(SuppliersActions.loadSupplier({id:entity.id}));
-      console.log("watch record")
-      this.router.navigate(['supplier-form/view/'+entity.id])
+
+      this.idsChecked = entity.rules
+      this.cronjob = {
+        title:entity.title,
+        supplier:entity.supplier,
+        description:entity.description,
+        automatical:entity.automatical,
+        rules:entity.rules,
+        executeHour:entity.executeHour
+      }
+      this.openFormModal()
+
+      this.isFormDisabled = true     
     }
   
     editRecord(entity): void {
-      console.log("entity",entity)
-      this.store.dispatch(SuppliersActions.loadSupplier({id:entity.id}));
-      this.router.navigate(['supplier-form/edit/'+entity.id])
+      this.idsChecked = entity.rules
+      this.cronjob = {
+        title:entity.title,
+        supplier:entity.supplier?.id,
+        description:entity.description,
+        automatical:entity.automatical,
+        rules:entity.rules,
+        executeHour:entity.executeHour
+      }
+      this.openFormModal()
     }
   
     changeState(): void {
@@ -142,7 +159,7 @@ export class ChronosComponent implements OnInit, OnDestroy {
   
     ngOnDestroy() {
       // prevent memory leak when component destroyed
-      this.subscription.unsubscribe();
+      //this.subscription.unsubscribe();
     }
   
     ShowPicture(entity):void{
@@ -313,13 +330,13 @@ export class ChronosComponent implements OnInit, OnDestroy {
 
         this.countDowns[entity.id] = totalSeconds
 
-        if(this.interval == null)
+        if(isNaN(this.intervals[entity.id]))
         {
-          this.interval = setInterval(() => {
+          this.intervals[entity.id] = setInterval(() => {
             if(this.countDowns[entity.id] > 0) {
               this.countDowns[entity.id] --;
             } else {
-              clearInterval(this.interval);
+              clearInterval(this.intervals[entity.id]);
             }
           },1000)
         }        
@@ -350,7 +367,7 @@ export class ChronosComponent implements OnInit, OnDestroy {
       }
     
       // The output in MM:SS format
-      return `${hours}:${minutes}:${secondsString}`;
+      return `${hours}:${minutes}:${parseInt(secondsString)}`;
     }
 
 }

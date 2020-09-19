@@ -52,6 +52,7 @@
                 <th scope="col">Tipo de regla</th>
                 <th scope="col">Catálogo</th>
                 <th scope="col">Tipo de operación</th>
+                <th scope="col">Campos a verificar</th>
                 <th scope="col">Campos seleccionados</th>
                 <th scope="col">Si</th>
                 <th scope="col">Entonces</th>
@@ -60,10 +61,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let entity of  entities$|async;" >
+              <tr *ngFor="let entity of  rules.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) " >
                 <td>{{ getRuleTypeName(entity.ruleType) }}</td>
                 <td>{{ getSupplierName( entity.supplier )  }}</td>
                 <td>{{ entity.operationType }}</td>
+                <td>{{ entity.fieldsToCheck }}</td>
                 <td>{{ entity.selectedFields }}</td>
                 <td>{{ entity.if }}</td>
                 <td>{{ entity.then }}</td>
@@ -85,6 +87,9 @@
             </tbody>
           </table>
         </div>
+
+        <table-footer [entities]="rules" [rowsPerPage]="rowsPerPage" (pageChanged)="onPageChange($event)" ></table-footer>
+
       </div>
     </div>
   </div>
@@ -130,12 +135,21 @@
           </select>          
         </div>
 
-        <div class="form-group" *ngIf="rule.ruleType === 'GRAMMAR_CORRECTION'  && rule.operationType == 'ADD' " >
-          <label>Cambos en los que buscar</label>
+        <div class="form-group" *ngIf=" (rule.ruleType === 'PRICES' ) " >
+          <label>Si se encuentra la palabra</label>
+          <textarea class="form-control" [(ngModel)]="rule.if" disabled="{{isFormDisabled}}"></textarea>  
+          <span style="font-size: 11px;" >Si se deja este campo vacio, la regla de precios se ejecutara en todos los productos del catalogo</span>                
+      </div>
+
+        <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION'  && rule.operationType == 'ADD') || rule.ruleType === 'PRICES' " >
+          <label>Campos en los que buscar</label>
           <ng-select [multiple]="true" [(ngModel)]="rule.fieldsToCheck" [disabled]="isFormDisabled" >
             <ng-option *ngFor="let field of shopifyFields" [value]="field.id" >{{field.name}}</ng-option>
-          </ng-select>  
+          </ng-select> 
+          <span *ngIf="rule.ruleType === 'PRICES'"  style="font-size: 11px;" >Llenar este campo solo si el anterior no esta vacio</span>
         </div>
+
+        
 
         <div class="form-group" *ngIf="rule.ruleType === 'GRAMMAR_CORRECTION' " >
           <label *ngIf="rule.operationType != 'ADD'">Campos relacionados</label>
@@ -158,7 +172,8 @@
 
         <div class="form-group" *ngIf="rule.ruleType === 'GRAMMAR_CORRECTION' " >
           <label>Similar</label>
-          <input type="number"  [(ngModel)]="rule.similarity" min="0" max="100" class="form-control" disabled="{{isFormDisabled}}">    
+          <input type="number"  [(ngModel)]="rule.similarity" min="0" max="100" class="form-control" disabled="{{isFormDisabled}}">   
+          <span style="font-size: 11px;" >El porcentaje debe ser un número entre 0 a 100, esto equivale al porcentaje (%c)</span> 
         </div>
 
         <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && ( rule.operationType === 'REPLACE' || rule.operationType === 'ADD' ))  " >

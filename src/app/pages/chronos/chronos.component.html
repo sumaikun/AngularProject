@@ -87,9 +87,9 @@
 
                       </div>
                       <br/>
-                      <a style="width:100%" href="#" class="btn btn-primary">Ver</a>
+                      <a style="width:100%" href="javascript:void(0)" (click)="watchRecord(entity)" class="btn btn-primary">Ver</a>
                       <br/>
-                      <a style="width:100%" href="#" class="btn btn-danger">Editar</a>
+                      <a style="width:100%" href="javascript:void(0)" (click)="editRecord(entity)" class="btn btn-danger">Editar</a>
                     </div>
                 </div>
             </div>                  
@@ -146,7 +146,7 @@
       <label>Automático</label>
       <br/>
       <label class="custom-toggle">
-        <input type="checkbox" [(ngModel)]="cronjob.automatical" checked="">
+        <input type="checkbox" disabled="{{isFormDisabled}}" [(ngModel)]="cronjob.automatical" checked="">
         <span class="custom-toggle-slider rounded-circle"></span>
       </label>
     </div>

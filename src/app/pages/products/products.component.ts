@@ -47,7 +47,13 @@ export class ProductsComponent implements OnInit {
 
   textToSearch: string
 
-  page: number
+  rowsPerPage:number;
+
+  page:number;
+
+  currentVendor:string;
+
+  tabMode:string;
 
   constructor(private shopifyService: ShopifyService,
     private rulesService: RulesService,
@@ -62,13 +68,21 @@ export class ProductsComponent implements OnInit {
 
     this.appENV = environment
 
+    this.rowsPerPage = 125
+    this.page = 0
+
+    this.products = []
+
     this.shopifyService.getProducts().subscribe( products => {
 
         this.products = products.products
 
+        console.log("this.products",this.products)
+
         //this.originalProducts = products.products
 
         this.loading = false
+        
 
       },
       error => {
@@ -86,6 +100,10 @@ export class ProductsComponent implements OnInit {
     this.viewMode = "list"
 
     this.idsChecked = []
+
+    this.currentVendor = ""
+
+    this.tabMode = "combinedList"
   }
 
   ShowPicture(photoUrl):void{
@@ -114,7 +132,7 @@ export class ProductsComponent implements OnInit {
 
   getShopifyProductsByVendor(vendor:string,currentSupplier:any):void{
 
-    if(this.loading === false)
+    /*if(this.loading === false)
     {
         this.idsChecked = []
         this.loading = true
@@ -136,8 +154,12 @@ export class ProductsComponent implements OnInit {
           this.loading = false
 
         }) 
-        this.currentSupplier = currentSupplier
-    }
+        
+    }*/
+
+    this.currentSupplier = currentSupplier
+
+    this.currentVendor = vendor
     
   }
 
@@ -255,7 +277,7 @@ export class ProductsComponent implements OnInit {
         }
         // a must be equal to b
         return 0;
-      })  
+      })
     }
     return this.products.sort(function (a, b) {
       if (a.id > b.id) {
@@ -266,8 +288,23 @@ export class ProductsComponent implements OnInit {
       }
       // a must be equal to b
       return 0;
-    })
+    }).filter(
+      row => {
+        if(this.currentVendor.length > 0)
+        {
+          //console.log("this.currentVendor",this.currentVendor)
+          return row.vendor === this.currentVendor
+        }
+
+        return true
+      }
+    )
   }
+
+  fullListWithPagination(){
+    const data = this.fullList()
+    return data.slice(this.page * this.rowsPerPage, this.page * this.rowsPerPage + this.rowsPerPage)
+  }  
 
   filteredByPure(){
     if(this.textToSearch)
@@ -288,7 +325,17 @@ export class ProductsComponent implements OnInit {
         }
         // a must be equal to b
         return 0;
-      })  
+      }).filter(
+        row => {
+          if(this.currentVendor.length > 0)
+          {
+            //console.log("this.currentVendor",this.currentVendor)
+            return row.vendor === this.currentVendor
+          }
+  
+          return true
+        }
+      )
     }
     return this.products.filter( product => !product.mode ).sort(function (a, b) {
       if (a.id > b.id) {
@@ -299,7 +346,22 @@ export class ProductsComponent implements OnInit {
       }
       // a must be equal to b
       return 0;
-    })   
+    }).filter(
+      row => {
+        if(this.currentVendor.length > 0)
+        {
+          //console.log("this.currentVendor",this.currentVendor)
+          return row.vendor === this.currentVendor
+        }
+
+        return true
+      }
+    )   
+  }
+
+  filteredByPureWithPagination(){
+    const data = this.filteredByPure()
+    return data.slice(this.page * this.rowsPerPage, this.page * this.rowsPerPage + this.rowsPerPage)
   }
 
   filteredByTest(){
@@ -321,7 +383,7 @@ export class ProductsComponent implements OnInit {
         }
         // a must be equal to b
         return 0;
-      })  
+      })
     }
     return this.products.filter( product => product.mode === "test" ).sort(function (a, b) {
       if (a.id > b.id) {
@@ -332,7 +394,12 @@ export class ProductsComponent implements OnInit {
       }
       // a must be equal to b
       return 0;
-    })   
+    })
+  }
+
+  filteredByTestWithPagination(){
+    const data = this.filteredByTest()
+    return data.slice(this.page * this.rowsPerPage, this.page * this.rowsPerPage + this.rowsPerPage) 
   }
 
   onTabChange(){
@@ -345,29 +412,30 @@ export class ProductsComponent implements OnInit {
 
   }
 
-  clickDirection(direction:String):void{
-
-    let lastID
-
-    this.loading = true
-    
-    //console.log("avaliableProducts",avaliableProducts,this.currentSupplier)
-
-    if(direction == "next")
-    {
-      lastID = this.originalProducts[ this.originalProducts.length - 1 ].id
-    }else{
-      lastID = this.originalProducts[0].id
-    }
-
-    this.shopifyService.getByVendorDirection( this.currentSupplier.vendorId, lastID, direction ).subscribe( products => {
-      
-      this.products = products.products
-      this.loading = false
-
-    })
+  onPageChange(page:number):void {
+    console.log("page to change",page)
+    this.page = page
   }
 
+  checkTabType(tabMode:string):void{
+    console.log("checkTabType")
+    this.tabMode = tabMode
+  }
+
+  footerData(){
+    switch(this.tabMode){
+      case "combinedList":
+        return this.fullList()
+      case "pureList":
+        return this.filteredByPure()
+      case "testList":
+        return this.filteredByTest()
+      default:
+        return []
+      
+
+    }
+  }
 
 }
 

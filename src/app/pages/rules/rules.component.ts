@@ -5,7 +5,8 @@ import { SuppliersActions, RulesActions } from "../../store/actions"
 import { selectAllEntities as selectAll} from "../../store/selectors/suppliers"
 import { selectAllEntities , selectEntityLoaded, selectError } from "../../store/selectors/rules";
 import Swal from 'sweetalert2' 
-
+import { SearchService } from "../../services/search.service"
+import { Subscription }   from 'rxjs';
 
 @Component({
   selector: 'app-rules',
@@ -38,20 +39,119 @@ export class RulesComponent implements OnInit {
 
   supplierToClone:string
 
+  rowsPerPage:number;
+
+  page:number;
+
+  subscription: Subscription;
+
+  subscription2: Subscription;
+
+  subscription3: Subscription;
+
+  apiError: boolean
+
   constructor(private modalService: NgbModal,
-    private store: Store<any>) { }
+    private searchService: SearchService,
+    private store: Store<any>) {
 
+      this.apiError = false
 
-    //selectedFields = [];
-    shopifyFields = [
-        { id: 'title', name: 'title' },
-        { id: 'body_html', name: 'body_html' },
-        { id: 'product_type', name: 'product_type' },
-        { id: 'handle', name: 'handle' },
-        { id: 'tags', name: 'tags' },
-    ];
+      searchService.clear()
 
+      this.subscription = searchService.textToSearch$.subscribe( text => {
+
+        if(text.length > 0)
+        {
+          this.rules = []
+
+          const textToSearch = text.toLocaleLowerCase()
+          
+          this.entities$.subscribe( data =>  {
+            data.forEach(element => {
+
+              const ruleTypeName = this.getRuleTypeName(element.ruleType)
+
+              const supplierName = this.getSupplierName(element.supplier)
+              
+              if(ruleTypeName.toLocaleLowerCase().includes(textToSearch)
+              || supplierName.toLocaleLowerCase().includes(textToSearch)
+              || element.operationType.toLocaleLowerCase().includes(textToSearch)
+              || element.if.toLocaleLowerCase().includes(textToSearch)
+              || element.then.toLocaleLowerCase().includes(textToSearch))
+              {
+                this.rules.push(element)
+              }
+            })
+          })
+        }
+        else{
+          this.entities$.subscribe( data =>  this.rules = data ) 
+        }
+        
+        
+      })
+
+      this.subscription2 = this.error$.subscribe( error => {
+      
+        console.log("error",error,this.buttonWasPressed)
+        if( this.buttonWasPressed ){
+          this.apiError = true
+
+          if(error.message && error.message.includes("Can not update rule with the same data"))
+          {
+            return Swal.fire(
+              'Espera',
+              'No se puede actualizar una regla con la misma información',
+              'warning'
+            ).then( any =>  this.apiError = false )
+          }
+
+          return Swal.fire(
+            'Espera',
+            'Sucedio un error',
+            'error'
+          ).then( any =>  this.apiError = false )
+          
+        }
+        
+      })
+  
+      this.subscription3 = this.loaded$.subscribe( loaded => {
+  
+        console.log("loaded",loaded,this.buttonWasPressed,this.apiError)
+  
+        if(loaded && this.buttonWasPressed && !this.apiError ){
+  
+          this.buttonWasPressed = false
+  
+          let self = this
+  
+          window.setTimeout(function(){ self.store.dispatch(RulesActions.loadRules()); }, 1000)
+          
+  
+          return Swal.fire(
+            'Bien',
+            'Datos registrados',
+            'success'
+          )
+        }
+      })    
+  }
+
+  ngOnDestroy() {
+    // prevent memory leak when component destroyed
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
+  }
+
+    
+  
   ngOnInit(): void {
+
+    this.rowsPerPage = 10
+    this.page = 0
 
     this.store.dispatch(RulesActions.offLoad());
 
@@ -79,38 +179,7 @@ export class RulesComponent implements OnInit {
 
     this.isFormDisabled = false
 
-    this.error$.subscribe( error => {
-      
-      if( this.buttonWasPressed ){
-        return Swal.fire(
-          'Espera',
-          'Sucedio un error',
-          'error'
-        )
-      }
-      
-    })
 
-    this.loaded$.subscribe( loaded => {
-
-      console.log("loaded",loaded,this.buttonWasPressed)
-
-      if(loaded && this.buttonWasPressed ){
-
-        this.buttonWasPressed = false
-
-        let self = this
-
-        window.setTimeout(function(){ self.store.dispatch(RulesActions.loadRules()); }, 1000)
-        
-
-        return Swal.fire(
-          'Bien',
-          'Datos registrados',
-          'success'
-        )
-      }
-    })    
 
   }
 
@@ -170,6 +239,8 @@ export class RulesComponent implements OnInit {
       )
     }
 
+    //////////  Grammar correction validation
+
     if(this.rule.ruleType === "GRAMMAR_CORRECTION" && !this.rule.operationType )
     {
       return Swal.fire(
@@ -198,24 +269,44 @@ export class RulesComponent implements OnInit {
       )
     }
 
-    if(this.rule.ruleType === "PRICES" && (  !this.rule.then ) )
+    if(this.rule.ruleType === "GRAMMAR_CORRECTION" && this.rule.similarity && (this.rule.similarity < 0 
+      || this.rule.similarity > 100 ) )
+      {
+       return Swal.fire(
+         'Espera',
+         'El valor debe estar entre 0 y 100',
+         'warning'
+       )
+      }
+
+    //////////  Prices validation
+
+    if(this.rule.ruleType === "PRICES" &&   !this.rule.then )
     {
       return Swal.fire(
         'Espera',
-        'Para validar precios debes tener todos los campos',
+        'Para validar precio por lo menos debes tener el campo formula',
         'warning'
       )
     }
 
-     if(this.rule.ruleType === "COLOR" && (  !this.rule.if  && !this.rule.then ) )
+    if(this.rule.ruleType === "PRICES" && (  !this.rule.then )  && this.rule.if && !this.rule.fieldsToCheck )
     {
       return Swal.fire(
         'Espera',
-        'Para reemplazar el color debes tener todos los campos',
+        'Para validar precio de esta manera debes llenar todos los campos',
         'warning'
       )
     }
 
+    if(this.rule.ruleType === "PRICES" && (  !this.rule.then )  && !this.rule.if && this.rule.fieldsToCheck )
+    {
+      return Swal.fire(
+        'Espera',
+        'Debes los campos faltantes para validar la regla de precios de esta forma',
+        'warning'
+      )
+    }
 
     if((this.rule.ruleType === "PRICES" && !this.rule.then.includes("price*"))){
       return Swal.fire(
@@ -236,17 +327,23 @@ export class RulesComponent implements OnInit {
         )
       }
     }
-    
 
-    if(this.rule.ruleType === "GRAMMAR_CORRECTION" && this.rule.similarity && (this.rule.similarity < 0 
-     || this.rule.similarity > 100 ) )
-     {
+     //////////  Prices validation
+
+     if(this.rule.ruleType === "COLOR" && (  !this.rule.if  && !this.rule.then ) )
+    {
       return Swal.fire(
         'Espera',
-        'El valor debe estar entre 0 y 100',
+        'Para reemplazar el color debes tener todos los campos',
         'warning'
       )
-     }
+    }
+
+
+ 
+    
+
+ 
 
      const exist = this.checkIfRuleExist(this.rule)
 
@@ -307,27 +404,6 @@ export class RulesComponent implements OnInit {
     }    
 
     this.modalService.dismissAll()
-
-    this.loaded$.subscribe( loaded => {
-
-      console.log("loaded",loaded,this.buttonWasPressed)
-
-      if(loaded && this.buttonWasPressed ){
-
-        this.buttonWasPressed = false
-
-        let self = this
-
-        window.setTimeout(function(){ self.store.dispatch(RulesActions.loadRules()); }, 1000)
-        
-
-        return Swal.fire(
-          'Bien',
-          'Datos registrados',
-          'success'
-        )
-      }
-    })    
 
   }
 

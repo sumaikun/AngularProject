@@ -49,7 +49,6 @@ import { ChronosFormComponent } from '../../pages/chronos-form/chronos-form.comp
     MapsComponent,
     UsersComponent,
     UserFormComponent,
-    TableFooterComponent,
     PictureModalComponent,
     SuppliersComponent,
     SuppliersFormComponent,
@@ -57,7 +56,8 @@ import { ChronosFormComponent } from '../../pages/chronos-form/chronos-form.comp
     ProductsComponent,
     RulesComponent,
     ChronosComponent,
-    ChronosFormComponent
+    ChronosFormComponent,
+    TableFooterComponent,  
   ],
   providers: [
     UsersResolver,

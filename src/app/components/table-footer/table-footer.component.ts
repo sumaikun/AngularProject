@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 
 
 
@@ -9,7 +9,7 @@ import { Component, OnInit, Input, Output, EventEmitter, } from '@angular/core';
 })
 
 
-export class TableFooterComponent implements OnInit { 
+export class TableFooterComponent implements OnInit , OnChanges { 
 
   @Input() entities: Array<any>;
   @Input('rowsPerPage') rowsPerPage: number;
@@ -22,9 +22,27 @@ export class TableFooterComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log(this.entities,this.rowsPerPage,Math.ceil(this.entities.length/this.rowsPerPage) )
+    console.log("footer log",this.entities,this.rowsPerPage,Math.ceil(this.entities.length/this.rowsPerPage) )
     this.totalPages = Math.ceil(this.entities.length/this.rowsPerPage)
     this.currentPage = 1
+  }
+
+  ngOnChanges(changes) {
+
+    //console.log("changes",changes)
+
+    //console.log(changes.entities.currentValue.length != changes.entities.previousValue.length)
+
+    if( changes.entities.currentValue && changes.entities.previousValue &&
+       changes.entities.currentValue.length != changes.entities.previousValue.length )
+    {
+      this.totalPages = Math.ceil(this.entities.length/this.rowsPerPage)
+      this.currentPage = 1
+    }
+   
+
+    //console.log("entities",this.entities)
+
   }
 
   changePage(page):void{
