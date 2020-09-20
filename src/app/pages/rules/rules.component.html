@@ -79,7 +79,7 @@
                       <a class="dropdown-item" (click)="watchRecord(entity)" href="javascript:void(0)">Ver</a>
                       <a class="dropdown-item" (click)="editRecord(entity)" href="javascript:void(0)">Editar</a>
                       <a class="dropdown-item" (click)="openCloneModal(entity)"   href="javascript:void(0)">Clonar</a>
-                      <a class="dropdown-item" (click)="watchRecord(entity)" href="javascript:void(0)">Versiones anteriores</a>
+                      <a class="dropdown-item" (click)="checkVersions(entity)" href="javascript:void(0)">Versiones anteriores</a>
                     </div>
                   </div>
                 </td>
@@ -138,7 +138,8 @@
         <div class="form-group" *ngIf=" (rule.ruleType === 'PRICES' ) " >
           <label>Si se encuentra la palabra</label>
           <textarea class="form-control" [(ngModel)]="rule.if" disabled="{{isFormDisabled}}"></textarea>  
-          <span style="font-size: 11px;" >Si se deja este campo vacio, la regla de precios se ejecutara en todos los productos del catalogo</span>                
+          <span style="font-size: 11px;" >Si se deja este campo vacio, la regla de precios se ejecutara en todos los productos del catalogo</span>
+          <span style="font-size: 11px;" >Las palabras deben ir separadas por comas. ej: Palabra1, Palabra2</span>                  
       </div>
 
         <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION'  && rule.operationType == 'ADD') || rule.ruleType === 'PRICES' " >
@@ -162,12 +163,14 @@
         <div class="form-group" *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType ) " >
             <label *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && ( rule.operationType === 'REPLACE' || rule.operationType === 'ADD'  ) ) " >Si</label>
             <label *ngIf=" (rule.ruleType === 'GRAMMAR_CORRECTION' && rule.operationType === 'DELETE' ) ">Palabra a eliminar</label>
-            <textarea class="form-control" [(ngModel)]="rule.if" disabled="{{isFormDisabled}}"></textarea>                  
+            <textarea class="form-control" [(ngModel)]="rule.if" disabled="{{isFormDisabled}}"></textarea>
+            <span style="font-size: 11px;" >Las palabras deben ir separadas por comas. ej: Palabra1, Palabra2</span>                  
         </div>
 
         <div class="form-group" *ngIf=" rule.ruleType === 'COLOR' " >
           <label>Si option contiene palabra</label>
-          <textarea class="form-control" [(ngModel)]="rule.if" disabled="{{isFormDisabled}}"></textarea>                  
+          <textarea class="form-control" [(ngModel)]="rule.if" disabled="{{isFormDisabled}}"></textarea>
+          <span style="font-size: 11px;" >Para incluir varios colores debe ir separado por comas. ej: Azul, Rojo</span>                   
         </div>
 
         <div class="form-group" *ngIf="rule.ruleType === 'GRAMMAR_CORRECTION' " >
@@ -189,7 +192,12 @@
 
         <div class="form-group" *ngIf=" (rule.ruleType === 'PRICES' )  " >
           <label>Formula</label>
-          <input type="text" [(ngModel)]="rule.then" [disabled]="isFormDisabled"  class="form-control">   
+          <input type="text" [(ngModel)]="rule.then" [disabled]="isFormDisabled"  class="form-control"> 
+          <span style="font-size: 11px;"  >Las formulas deben seguir las siguientes formas:</span>
+          <ul style="font-size: 11px;" >
+            <li>Regla de multiplicación: price*1000, ej: original 1 resultado 1000</li>
+            <li>Regla de porcentaje: price+(20%) ej: original 1000 resultado 1200 </li>
+          </ul>  
         </div>     
 
 
@@ -220,6 +228,62 @@
       
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Guardar click')">Guardar</button>
+    </div>
+  </ng-template>
+
+
+  <ng-template #content3 let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Versiones anteriores de la regla</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      
+      <div class="table-responsive-query" >
+        <table class="table align-items-center table-flush">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Tipo de regla</th>
+              <th scope="col">Catálogo</th>
+              <th scope="col">Tipo de operación</th>
+              <th scope="col">Campos a verificar</th>
+              <th scope="col">Campos seleccionados</th>
+              <th scope="col">Si</th>
+              <th scope="col">Entonces</th>
+              <th scope="col">Similaridad</th>
+              <th scope="col">Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let entity of  ruleVersions " >
+              <td>{{ getRuleTypeName(entity.ruleType) }}</td>
+              <td>{{ getSupplierName( entity.supplier )  }}</td>
+              <td>{{ entity.operationType }}</td>
+              <td>{{ entity.fieldsToCheck }}</td>
+              <td>{{ entity.selectedFields }}</td>
+              <td>{{ entity.if }}</td>
+              <td>{{ entity.then }}</td>
+              <td>{{ entity.similarity }}</td>
+              <td class="text-right">
+                <div ngbDropdown placement="bottom-right">
+                  <a class="btn btn-sm btn-icon-only text-light"  ngbDropdownToggle>
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                    <a class="dropdown-item" (click)="comeBackVersions(entity)" href="javascript:void(0)">Regrear a esta version</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Guardar click')">Guardar</button>
     </div>
   </ng-template>

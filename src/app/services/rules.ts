@@ -22,4 +22,8 @@ export class RulesService extends EntityService {
     return this.http.post(environment.serverUrl+this.parameter+"/testRules",{ rules, exampleData });
   }
 
+  getVersions(id:string){
+    return this.http.get(environment.serverUrl+this.parameter+"/versions/"+id);
+  }
+
 }

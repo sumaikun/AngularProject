@@ -84,7 +84,7 @@ export class ChronosComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
       this.store.dispatch(SuppliersActions.loadSuppliers());
       this.store.dispatch(ChronosActions.loadChronos());
-      this.rowsPerPage = 10
+      this.rowsPerPage = 9
       this.page = 0
       
       this.entities$.subscribe( data =>  this.entities = data )

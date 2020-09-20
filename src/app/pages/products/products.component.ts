@@ -47,6 +47,8 @@ export class ProductsComponent implements OnInit {
 
   textToSearch: string
 
+  textToSearch2: string
+
   rowsPerPage:number;
 
   page:number;
@@ -104,6 +106,8 @@ export class ProductsComponent implements OnInit {
     this.currentVendor = ""
 
     this.tabMode = "combinedList"
+
+    this.textToSearch2 = ""
   }
 
   ShowPicture(photoUrl):void{
@@ -412,6 +416,12 @@ export class ProductsComponent implements OnInit {
 
   }
 
+  onSearchChange2(text):void{
+    //console.log(text)
+    this.textToSearch2 = text
+
+  }
+
   onPageChange(page:number):void {
     console.log("page to change",page)
     this.page = page
@@ -435,6 +445,44 @@ export class ProductsComponent implements OnInit {
       
 
     }
+  }
+
+  getRuleTypeName( name ){
+
+    let expr
+
+    switch (name) {
+      case 'GRAMMAR_CORRECTION':
+        expr = "Corrección gramatical"
+        break;
+      case 'PRICES':
+        expr = "Corrección de precios"
+        break;
+      case 'COLOR':
+        expr = "Corrección de color"
+        break;
+      default:
+        expr = ""
+    }
+
+    return expr
+  }
+
+  getSupplierRules(){
+    if(this.textToSearch2.length > 0)
+    {
+      return this.supplierRules.filter( element =>  {
+        const ruleTypeName = this.getRuleTypeName(element.ruleType)    
+        
+        console.log("ruleTypeName",ruleTypeName,"element",element)
+        
+        return  ruleTypeName?.toLocaleLowerCase().includes(this.textToSearch2.toLocaleLowerCase())
+        || element.operationType?.toLocaleLowerCase().includes(this.textToSearch2.toLocaleLowerCase())
+        || element.if?.toLocaleLowerCase().includes(this.textToSearch2.toLocaleLowerCase())
+        || element.then?.toLocaleLowerCase().includes(this.textToSearch2.toLocaleLowerCase())
+      })
+    }
+    return this.supplierRules
   }
 
 }

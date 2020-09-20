@@ -7,6 +7,7 @@ import { selectAllEntities , selectEntityLoaded, selectError } from "../../store
 import Swal from 'sweetalert2' 
 import { SearchService } from "../../services/search.service"
 import { Subscription }   from 'rxjs';
+import { RulesService } from '../../services/rules';
 
 @Component({
   selector: 'app-rules',
@@ -25,6 +26,8 @@ export class RulesComponent implements OnInit {
 
   @ViewChild('content2') content2:ElementRef;
 
+  @ViewChild('content3') content3:ElementRef;
+
   suppliers$ = this.store.pipe(select(selectAll));
 
   rule:any
@@ -36,6 +39,8 @@ export class RulesComponent implements OnInit {
   isFormDisabled:boolean
 
   rules: any[]
+
+  ruleVersions: any
 
   supplierToClone:string
 
@@ -53,6 +58,7 @@ export class RulesComponent implements OnInit {
 
   constructor(private modalService: NgbModal,
     private searchService: SearchService,
+    private rulesService: RulesService,
     private store: Store<any>) {
 
       this.apiError = false
@@ -74,11 +80,11 @@ export class RulesComponent implements OnInit {
 
               const supplierName = this.getSupplierName(element.supplier)
               
-              if(ruleTypeName.toLocaleLowerCase().includes(textToSearch)
-              || supplierName.toLocaleLowerCase().includes(textToSearch)
-              || element.operationType.toLocaleLowerCase().includes(textToSearch)
-              || element.if.toLocaleLowerCase().includes(textToSearch)
-              || element.then.toLocaleLowerCase().includes(textToSearch))
+              if(ruleTypeName?.toLocaleLowerCase().includes(textToSearch.toLocaleLowerCase())
+              || supplierName?.toLocaleLowerCase().includes(textToSearch.toLocaleLowerCase())
+              || element.operationType?.toLocaleLowerCase().includes(textToSearch.toLocaleLowerCase())
+              || element.if?.toLocaleLowerCase().includes(textToSearch.toLocaleLowerCase())
+              || element.then?.toLocaleLowerCase().includes(textToSearch.toLocaleLowerCase()))
               {
                 this.rules.push(element)
               }
@@ -97,8 +103,8 @@ export class RulesComponent implements OnInit {
         console.log("error",error,this.buttonWasPressed)
         if( this.buttonWasPressed ){
           this.apiError = true
-
-          if(error.message && error.message.includes("Can not update rule with the same data"))
+          
+          if(error.error.message && error.error.message.includes("Can not update rule with the same data"))
           {
             return Swal.fire(
               'Espera',
@@ -120,6 +126,8 @@ export class RulesComponent implements OnInit {
       this.subscription3 = this.loaded$.subscribe( loaded => {
   
         console.log("loaded",loaded,this.buttonWasPressed,this.apiError)
+
+        this.store.dispatch(RulesActions.offLoad());
   
         if(loaded && this.buttonWasPressed && !this.apiError ){
   
@@ -146,7 +154,14 @@ export class RulesComponent implements OnInit {
     this.subscription3.unsubscribe();
   }
 
-    
+  shopifyFields = [
+    { id: 'title', name: 'title' },
+    { id: 'body_html', name: 'body_html' },
+    { id: 'product_type', name: 'product_type' },
+    { id: 'handle', name: 'handle' },
+    { id: 'tags', name: 'tags' },
+];
+
   
   ngOnInit(): void {
 
@@ -308,10 +323,12 @@ export class RulesComponent implements OnInit {
       )
     }
 
-    if((this.rule.ruleType === "PRICES" && !this.rule.then.includes("price*"))){
+    if(this.rule.ruleType === "PRICES" &&
+     !this.rule.then.includes("price*") &&
+      !this.rule.then.includes("price+(")){
       return Swal.fire(
         'Espera',
-        'La regla de precios debe incluir las palabras price*',
+        'La regla de precios debe incluir las palabras price* o la pablara price+(',
         'warning'
       )
     }
@@ -328,6 +345,35 @@ export class RulesComponent implements OnInit {
       }
     }
 
+    if(this.rule.ruleType === "PRICES" && this.rule.then.includes("price+(")){
+      const checkFormat = this.rule.then.substring(
+        this.rule.then.lastIndexOf("(") + 1, 
+        this.rule.then.lastIndexOf(")")
+      );
+
+      if(!checkFormat.includes("%"))
+      {
+        return Swal.fire(
+          'Espera',
+          'Para incluir una regla del porcentaje debes incluir el simbolo del porcentaje',
+          'warning'
+        )  
+      }
+
+      const numberToMultiply = checkFormat.replace("%", '')
+
+      console.log("numberToMultiply",numberToMultiply,parseInt(numberToMultiply),isNaN(parseInt(numberToMultiply)))
+
+      if( isNaN(parseInt(numberToMultiply)) ) {
+        return Swal.fire(
+          'Espera',
+          'En la regla del porcentaje (%) debe aparecer un número, no se reconocio el número',
+          'warning'
+        )
+      }
+
+    }  
+
      //////////  Prices validation
 
      if(this.rule.ruleType === "COLOR" && (  !this.rule.if  && !this.rule.then ) )
@@ -337,13 +383,7 @@ export class RulesComponent implements OnInit {
         'Para reemplazar el color debes tener todos los campos',
         'warning'
       )
-    }
-
-
- 
-    
-
- 
+    } 
 
      const exist = this.checkIfRuleExist(this.rule)
 
@@ -351,7 +391,7 @@ export class RulesComponent implements OnInit {
 
      if(exist.length == 0)
      {
-        this.saveRule(this.rule)    
+        //this.saveRule(this.rule)    
      }
      else{
       
@@ -360,7 +400,7 @@ export class RulesComponent implements OnInit {
           
           return Swal.fire(
             'Espera',
-            'Uno de los valores (si) ya existe en otra regla para el mismo catálogo, edite esta regla siquiere cambiarla',
+            'Uno de los valores (si) ya existe en otra regla para el mismo catálogo, edite esta regla si quiere cambiarla',
             'warning'
           )
 
@@ -368,6 +408,13 @@ export class RulesComponent implements OnInit {
           return Swal.fire(
             'Espera',
             'La conclusión (then) ya existe en otra regla para el mismo catálogo, no es necesario crear una nueva editela',
+            'warning'
+          )
+        
+        case "only one  general rule price by supplier":
+          return Swal.fire(
+            'Espera',
+            'Solo puede haber una regla de precio general por proveedor',
             'warning'
           )
       }
@@ -417,17 +464,19 @@ export class RulesComponent implements OnInit {
            frule.operationType === rule.operationType  && frule.supplier === rule.supplier ) 
            
         console.log("results",results)
-        
+
         results.map( result =>  {
-          rule.selectedFields.map( field => {
-            if(result.selectedFields.includes(field) && rule.id != result.id ){
+          rule.if.split(",").map( field => {
+            console.log("field",field)
+            if(result.if.includes(field) && rule.id != result.id ){
               exist = "field exist on another rule"
             }
           })
-        })
+        })  
 
         const results2 = this.rules.filter( frule =>  frule.ruleType === rule.ruleType && 
-          frule.then === rule.then && frule.supplier === rule.supplier && rule.id != frule.id  )
+          frule.then === rule.then && frule.supplier === rule.supplier && rule.id != frule.id && 
+          frule.operationType === rule.operationType )
 
         console.log("results2",results2)
 
@@ -440,13 +489,37 @@ export class RulesComponent implements OnInit {
       
       if(rule.ruleType === "PRICES" || rule.ruleType === "COLOR")
       {
-        const results2 = this.rules.filter( frule => frule => frule.ruleType === rule.ruleType && 
+        const results2 = this.rules.filter( frule =>  frule.ruleType === rule.ruleType && 
           frule.then === rule.then && frule.supplier === rule.supplier )
+
+        console.log("results2",results2)
 
         if(results2.length > 0)
         {
           exist = "field exist with same then"
         }
+      }
+
+      if(rule.ruleType === "PRICES" ){
+        const results = this.rules.filter( frule => frule.ruleType === rule.ruleType &&
+          frule.supplier === rule.supplier && frule.then && !frule.if && ( frule.fieldsToCheck.length == 0 || !frule.fieldsToCheck  ) ) 
+
+        if(results.length > 0)
+        {
+          exist = "only one  general rule price by supplier"
+        }
+
+        const results2 = this.rules.filter( frule => frule.ruleType === rule.ruleType &&
+          frule.supplier === rule.supplier && frule.if ) 
+
+          results2.map( result2 =>  {
+          rule.if.split(",").map( field => {
+            console.log("field",field)
+            if(result2.if.includes(field) && rule.id != result2.id ){
+              exist = "field exist on another rule"
+            }
+          })
+        })       
       }
 
     return exist
@@ -517,6 +590,45 @@ export class RulesComponent implements OnInit {
     this.isFormDisabled = false
   }
 
+  checkVersions( rule ){
+
+    this.rulesService.getVersions( rule.id ).subscribe( versions => this.ruleVersions = versions )
+
+    this.openVersionModal()
+  }
+
+  comeBackVersions( version ){
+    console.log("version",version)
+
+    Swal.fire({
+      title: '¿Estas seguro ?',
+      text: "La regla y sus condiciones en el chronos cambiara",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si,¡adelante!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.store.dispatch(RulesActions.updateRule(
+          {id:version.originalRule,data:{
+            id:version.originalRule,
+            ruleType:version.ruleType,
+            supplier:version.supplier,
+            operationType:version.operationType,
+            selectedFields:version.selectedFields,
+            fieldsToCheck:version.fieldsToCheck,
+            if:version.if,
+            then:version.then,
+            similarity:version.similarity
+          }}
+        ))
+      }
+    })
+
+
+  }
+
   openCloneModal( rule ){
     this.supplierToClone = "" 
     this.modalService.open(this.content2, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
@@ -558,7 +670,7 @@ export class RulesComponent implements OnInit {
               
               return Swal.fire(
                 'Espera',
-                'Uno de los valores (si) ya existe en otra regla para el mismo catálogo, edite esta regla siquiere cambiarla',
+                'Uno de los valores (si) ya existe en otra regla para el mismo catálogo, edite esta regla si quiere cambiarla',
                 'warning'
               )
 
@@ -566,6 +678,13 @@ export class RulesComponent implements OnInit {
               return Swal.fire(
                 'Espera',
                 'La conclusión (then) ya existe en otra regla para el mismo catálogo, no es necesario crear una nueva editela',
+                'warning'
+              )
+
+            case "only one  general rule price by supplier":
+              return Swal.fire(
+                'Espera',
+                'Solo puede haber una regla general de precio por proveedor',
                 'warning'
               )
           }
@@ -577,6 +696,15 @@ export class RulesComponent implements OnInit {
     }, (reason) => {
       console.log("reason",reason)
     });
+  }
+
+
+  openVersionModal(  ){
+  
+    this.modalService.open(this.content3, {ariaLabelledBy: 'modal-basic-title', size:'lg'}).result.then((result) => {
+    }, (reason) => {
+      console.log("reason",reason)
+    })
   }
 
 
