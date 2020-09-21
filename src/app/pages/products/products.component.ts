@@ -219,12 +219,28 @@ export class ProductsComponent implements OnInit {
       }
       else{
 
+        console.log("this.products.filter( product => !product.mode && product.supplier ===  this.currentSupplier.id)",
+        this.products.filter( product => !product.mode && product.vendor === this.currentSupplier.vendorId  ))
 
-        this.rulesService.testRules(  this.idsChecked, this.products.filter( product => !product.mode ) ).subscribe( 
+        this.rulesService.testRules(  this.idsChecked, this.products.filter( product => !product.mode 
+          && product.vendor ===  this.currentSupplier.vendorId ) ).subscribe( 
           (data: Array<any>)  => 
             {
               console.log(data)
-              this.products = data.sort(function (a, b) {
+              data.map(
+                subdata => {
+                  const index =  this.products.findIndex( element => element.id === subdata.id )
+                  if(index != -1)
+                  {
+                       this.products[index] = { ...this.products[index] , ...subdata}
+                  }
+                  else{
+                      //console.log("data",data)
+                       this.products.push(subdata)
+                  }
+                }
+              )
+              /*this.products = data.sort(function (a, b) {
                 if (a.id > b.id) {
                   return 1;
                 }
@@ -233,7 +249,7 @@ export class ProductsComponent implements OnInit {
                 }
                 // a must be equal to b
                 return 0;
-              })
+              })*/
             } 
           )
       }
