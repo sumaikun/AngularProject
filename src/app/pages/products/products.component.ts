@@ -123,10 +123,6 @@ export class ProductsComponent implements OnInit {
     this.pictureModal.open()
   }
 
-  createSupplier(): void {
-    console.log("createSupplier")
-    this.router.navigate(['supplier-form'])
-  }
 
   onCheckChange(mode,checked):void{
     
@@ -287,7 +283,9 @@ export class ProductsComponent implements OnInit {
         product.vendor?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.product_type?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.handle?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
-        product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase())
+        product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.id?.toString().includes(this.textToSearch) ||
+        product.originalId?.toString().includes(this.textToSearch)
       ).sort(function (a, b) {
         if (a.id > b.id) {
           return 1;
@@ -335,7 +333,8 @@ export class ProductsComponent implements OnInit {
         product.vendor?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.product_type?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.handle?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
-        product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase())
+        product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.id?.toString().includes(this.textToSearch)
       ).sort(function (a, b) {
         if (a.id > b.id) {
           return 1;
@@ -393,7 +392,8 @@ export class ProductsComponent implements OnInit {
         product.vendor?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.product_type?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.handle?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
-        product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase())
+        product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
+        product.originalId?.toString().includes(this.textToSearch)
       ).sort(function (a, b) {
         if (a.id > b.id) {
           return 1;

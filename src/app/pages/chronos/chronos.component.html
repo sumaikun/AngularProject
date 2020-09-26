@@ -75,7 +75,7 @@
                               <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
                             </g>
                           </svg>
-                          <span  id="base-timer-label" class="base-timer__label" >
+                          <span  id="base-timer-label" class="base-timer__label" *ngIf="entity.automatical">
                             <!-- Remaining time label -->
                             {{  formatTimeLeft(entity) }}
                           </span>

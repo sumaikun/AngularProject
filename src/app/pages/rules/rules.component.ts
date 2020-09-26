@@ -391,7 +391,7 @@ export class RulesComponent implements OnInit {
 
      if(exist.length == 0)
      {
-        //this.saveRule(this.rule)    
+        this.saveRule(this.rule)    
      }
      else{
       
@@ -436,11 +436,26 @@ export class RulesComponent implements OnInit {
     
     if(ruleData.id)
     {
-      console.log("update action")
+      const self = this
+      Swal.fire({
+        title: '¿Estas seguro ?',
+        text: "Creara una nueva version de la regla",
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si,¡adelante!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log("update action")
       
-      this.store.dispatch(RulesActions.updateRule(
-        {id:ruleData.id,data:ruleData}
-      ))
+          self.store.dispatch(RulesActions.updateRule(
+            {id:ruleData.id,data:ruleData}
+          ))
+        }
+      })
+
+      
 
     }
     else{

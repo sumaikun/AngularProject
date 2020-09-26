@@ -11,7 +11,7 @@ import { SuppliersComponent } from '../../pages/suppliers/suppliers.component'
 import { SuppliersFormComponent } from '../../pages/suppliers-form/suppliers-form.component'
 import { RulesComponent } from '../../pages/rules/rules.component'
 import { ChronosComponent } from '../../pages/chronos/chronos.component'
-import { ChronosFormComponent } from '../../pages/chronos-form/chronos-form.component'
+import { ProductsUpdatesComponent } from '../../pages/productsUpdated/productsUpdated.component'
 
 //Resolvers
 import { UsersResolver } from "../../resolvers/users.resolver";
@@ -89,13 +89,7 @@ export const AdminLayoutRoutes: Routes = [
         
         canActivate: [AuthGuard]  
     },
-    { path: 'chronos-form',          component: ChronosFormComponent,        
+    { path: 'productUpdated',   component: ProductsUpdatesComponent,
         canActivate: [AuthGuard]  
-    },
-    { path: 'chronos-form/:mode',       component: ChronosFormComponent,
-        canActivate: [AuthGuard]    
-    },
-    { path: 'chronos-form/:mode/:id',       component: ChronosFormComponent,
-        canActivate: [AuthGuard]    
-    },
+    }
 ];

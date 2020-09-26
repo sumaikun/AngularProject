@@ -149,7 +149,7 @@
                                     [src]="product.images[0]?.src"
                                     class="avatar rounded-circle">
                                 </a>
-                                <span style="margin-left: 15px;">{{ product.id }}</span>
+                                <span style="margin-left: 15px;">{{ product.originalId ? product.originalId : product.id }}</span>
                                 
                                 </div>
                               </td>

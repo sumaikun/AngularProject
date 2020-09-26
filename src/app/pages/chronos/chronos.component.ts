@@ -82,6 +82,9 @@ export class ChronosComponent implements OnInit, OnDestroy {
     }
   
     ngOnInit(): void {
+
+      console.log("on init executed")
+
       this.store.dispatch(SuppliersActions.loadSuppliers());
       this.store.dispatch(ChronosActions.loadChronos());
       this.rowsPerPage = 9
@@ -113,16 +116,11 @@ export class ChronosComponent implements OnInit, OnDestroy {
 
     }
   
-    createSupplier(): void {
-      console.log("createSupplier")
-      this.router.navigate(['supplier-form'])
-    } 
-  
-  
     watchRecord(entity): void {
 
       this.idsChecked = entity.rules
       this.cronjob = {
+        id:entity.id,
         title:entity.title,
         supplier:entity.supplier,
         description:entity.description,
@@ -136,8 +134,10 @@ export class ChronosComponent implements OnInit, OnDestroy {
     }
   
     editRecord(entity): void {
+      this.isFormDisabled = false   
       this.idsChecked = entity.rules
       this.cronjob = {
+        id:entity.id,
         title:entity.title,
         supplier:entity.supplier?.id,
         description:entity.description,
@@ -267,7 +267,21 @@ export class ChronosComponent implements OnInit, OnDestroy {
   
           let self = this
   
-          window.setTimeout(function(){ self.store.dispatch(ChronosActions.loadChronos()); }, 1000)
+          window.setTimeout(function(){ //self.store.dispatch(ChronosActions.loadChronos());
+            console.log("intervals",self.intervals)
+            console.log("here")
+            Object.keys(self.intervals).map( key => {
+              console.log("key",key)
+              clearInterval(self.intervals[key]);
+            })
+            console.log("after clear")
+            self.entities = []
+            self.store.dispatch(ChronosActions.loadChronos());           
+          }, 1000)
+
+          window.setTimeout(function(){
+            self.ngOnInit()
+          }, 1100)
           
   
           return Swal.fire(
@@ -306,6 +320,8 @@ export class ChronosComponent implements OnInit, OnDestroy {
       if(isNaN(this.countDowns[entity.id]))
       {
 
+        console.log("here",entity)
+
         const now = moment()  
         const startTime = moment(moment(now).format("HH:mm:ss"), "HH:mm:ss");
         const endTime = moment(entity.executeHour, "HH:mm:ss");
@@ -339,7 +355,9 @@ export class ChronosComponent implements OnInit, OnDestroy {
               clearInterval(this.intervals[entity.id]);
             }
           },1000)
-        }        
+        }else{
+          console.log("is not nan")
+        }  
 
       }
       

@@ -27,7 +27,7 @@ import { ProductsComponent } from 'src/app/pages/products/products.component';
 import { RulesComponent } from 'src/app/pages/rules/rules.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ChronosComponent } from '../../pages/chronos/chronos.component'
-import { ChronosFormComponent } from '../../pages/chronos-form/chronos-form.component'
+import { ProductsUpdatesComponent } from '../../pages/productsUpdated/productsUpdated.component'
 
 @NgModule({
   imports: [
@@ -56,7 +56,7 @@ import { ChronosFormComponent } from '../../pages/chronos-form/chronos-form.comp
     ProductsComponent,
     RulesComponent,
     ChronosComponent,
-    ChronosFormComponent,
+    ProductsUpdatesComponent,
     TableFooterComponent,  
   ],
   providers: [

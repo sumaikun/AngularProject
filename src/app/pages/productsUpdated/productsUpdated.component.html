@@ -1,0 +1,174 @@
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8">
+    <div class="container-fluid">
+      <div class="header-body">
+        <!-- Card stats -->
+       
+      </div>
+    </div>
+  </div>
+  <!-- Page content -->
+  <div class="container-fluid mt--7">
+    <!-- Table -->
+    <div class="row">
+      <div class="col">
+        <div class="card shadow">
+          <div class="card-header bg-transparent">
+            <h3 class="mb-0">Actualizaciones de productos</h3>
+          </div>
+          <div class="card-body">
+
+          <div class="row">
+            <div class="form-group col-lg-4">
+              <input type="date" [(ngModel)]="filter.fromDate" class="form-control" >
+            </div>
+            
+            <div class="form-group col-lg-4">
+              <input type="date" [(ngModel)]="filter.toDate" class="form-control" >
+            </div>
+
+            <div class="form-group col-lg-4">
+              <button class="btn btn-primary" (click)="filterByDates()" >Filtrar</button>
+            </div>
+            
+          </div>
+           
+          <div class="row" class="table-responsive" id="scrollarea-content">
+            <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table align-items-center table-flush ">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">id</th>
+                  <th scope="col">title</th>
+                  <th scope="col">body_html</th>
+                  <th scope="col">vendor</th>
+                  <th scope="col">product_type</th>
+                  <th scope="col">handle</th>
+                  <th scope="col">tags</th>
+                  <th scope="col">chronos</th>
+                  <th scope="col">opciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!--<tr *ngFor="let entity of (entities$ | async)">-->
+                <tr *ngFor=" let entity of  data "   > 
+                  <td>
+                    <div class="pictureCell">
+                    <a href="javascript:void(0)" (click)="ShowPictureByUrl(entity.shopifyProduct.product.image?.src)"  
+                    class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+                      <img style="width:30px;height: 30px;" alt="Image placeholder" 
+                        [src]="entity.shopifyProduct.product.images[0]?.src"
+                        class="avatar rounded-circle">
+                    </a>
+                    <span style="margin-left: 15px;">{{ entity.shopifyProduct.product.id }}</span>
+                    
+                    </div>
+                  </td>
+
+                  <td (dblclick)="openCell($event)">
+                    {{ entity.shopifyProduct.product.title }}
+                  </td>
+
+                  <td (dblclick)="openCell($event)">
+                    {{ entity.shopifyProduct.product.body_html }}
+                  </td>
+
+                  <td>
+                    <div>{{ entity.shopifyProduct.product.vendor }}</div>
+                  </td>
+
+                  <td>
+                    <div>{{ entity.shopifyProduct.product.product_type }}</div>
+                  </td>
+
+                  <td>
+                    <div>{{ entity.shopifyProduct.product.handle }}</div>
+                  </td>
+
+                  <td (dblclick)="openCell($event)">
+                    {{ entity.shopifyProduct.product.tags }}
+                  </td>
+
+                  <td>
+                    <div>{{ entity.chronos }}</div>
+                  </td>
+                      
+                  <td class="text-right">
+                    <div ngbDropdown placement="bottom-right">
+                      <a class="btn btn-sm btn-icon-only text-light"  ngbDropdownToggle>
+                        <i class="fas fa-ellipsis-v"></i>
+                      </a>
+                      <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                        <a class="dropdown-item" (click)="watchVariants(entity.shopifyProduct.product)" href="javascript:void(0)">Ver variantes</a>
+                        <a class="dropdown-item" (click)="watchVariants(entity.shopifyProduct.product)" href="javascript:void(0)">Recuperar esta versión</a>
+                      </div>
+                    </div>
+                  </td>
+
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
+           
+         
+         
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  
+
+  <app-picture-modal [picture]="supplierImage" ></app-picture-modal>
+
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">{{ selectedProduct?.title  }} Variantes</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="table-responsive">
+        <table class="table align-items-center table-flush">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">id</th>
+              <th scope="col">title</th>
+              <th scope="col">option</th>
+              <th scope="col">sku</th>
+              <th scope="col">price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor=" let product of  selectedProduct?.variants " >
+              <td>{{ product.id }}</td>
+              <td>{{ product.title }}</td>
+              <td>{{ product.option1 }}</td>
+              <td>{{ product.sku }}</td>
+              <td>{{ product.price }}</td>
+            </tr>
+          </tbody>
+        </table> 
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="avatar-group" *ngFor=" let image of  selectedProduct?.images "  >
+       
+        <a href="javascript:void(0)" (click)="ShowPictureByUrl(image.src)" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
+          <img style="width:30px;height: 30px;" alt="Image" [src]="image.src" class="rounded-circle">
+        </a>
+       
+      </div>
+      <!--
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+      -->  
+    </div>
+  </ng-template>
+
+
+
+
+ 
