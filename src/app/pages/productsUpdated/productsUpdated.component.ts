@@ -99,6 +99,28 @@ export class ProductsUpdatesComponent implements OnInit {
     this.selectedProduct = product
   }
 
+  recoverVersion(product){
+
+    Swal.fire({
+      title: '¿Esta seguro?',
+      text: "Esto modificara la información en la tienda",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, adelante!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.shopifyService.updateProductOnShopify(product.id,{product:product}).subscribe( 
+          result => Swal.fire("Ok","Datos actualizados","success"),
+          error =>  Swal.fire("Sucedio un error","No se pudo regresar a esta versión","error")
+        )
+            
+      }
+    })
+    
+  }
+
 
   openVariantsModal() {
     this.modalService.open(this.content, {ariaLabelledBy: 'modal-basic-title',size:'lg'}).result.then((result) => {

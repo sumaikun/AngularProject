@@ -60,7 +60,7 @@
         
           <div class="row">
             <div *ngFor="let entity of  entities.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) "
-             class="col-lg-4 col-md-4 col-sm-6" >
+             class="col-lg-4 col-md-6 col-sm-6" >
                 <div class="card" style="width: 18rem; height:500px; margin:35px">
                     
                     <div class="card-body">
@@ -186,7 +186,8 @@
           <tr *ngFor=" let rule of  supplierRules " >               
             <td>
               <div class="form-check">
-                <input type="checkbox"(change)="onCheckChange2(rule, $event.target.checked)" [checked]="isItemChecked(rule.id)">
+                <input type="checkbox" [disabled]="isFormDisabled"
+                 (change)="onCheckChange2(rule, $event.target.checked)" [checked]="isItemChecked(rule.id)">
                 <label class="form-check-label" style="margin-left: 5px;" for="exampleCheck1">{{ rule.ruleType  }}</label>
               </div> 
             </td>
@@ -201,7 +202,8 @@
   </div>
   <div class="modal-footer">     
     
-    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Asociar</button>
+    <button type="button" class="btn btn-outline-dark" [disabled]="isFormDisabled"
+     (click)="modal.close('Save click')">Asociar</button>
       
   </div>
 </ng-template>

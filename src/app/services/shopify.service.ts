@@ -25,4 +25,8 @@ export class ShopifyService {
     return this.http.get(environment.serverUrl+"shopify/byVendorDirection/"+vendor+"/"+lastID+"/"+direction)
   }
 
+  updateProductOnShopify(id:String,data:any):any{
+    return this.http.put(environment.serverUrl+"shopify/shopifyProduct/"+id,data)
+  }
+
 }

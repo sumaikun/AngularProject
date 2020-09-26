@@ -3,7 +3,7 @@ import {Router} from "@angular/router"
 import { Store, select } from "@ngrx/store";
 
 //actions to get
-import { selectAllEntities, selectEntityLoaded } from "../../store/selectors/chronos";
+import { selectAllEntities, selectEntityLoaded, selectError } from "../../store/selectors/chronos";
 import { SuppliersActions, ChronosActions } from "../../store/actions";
 import { SearchService } from "../../services/search.service"
 import { Subscription }   from 'rxjs';
@@ -35,13 +35,13 @@ export class ChronosComponent implements OnInit, OnDestroy {
 
   loaded$ =  this.store.pipe(select(selectEntityLoaded));
 
+  error$ = this.store.pipe(select(selectError));
+
   entities:Array<any>
 
   rowsPerPage:number;
 
-  page:number;
-
-  subscription: Subscription;
+  page:number; 
 
   supplierImage: string
 
@@ -67,6 +67,14 @@ export class ChronosComponent implements OnInit, OnDestroy {
 
   countDowns:any
 
+  subscription: Subscription;
+
+  subscription2: Subscription;
+
+  subscription3: Subscription;
+
+  apiError: boolean
+
   constructor(private store: Store<any>,
     private rulesService: RulesService,
     private router: Router,
@@ -82,6 +90,8 @@ export class ChronosComponent implements OnInit, OnDestroy {
     }
   
     ngOnInit(): void {
+
+      this.apiError = false
 
       console.log("on init executed")
 
@@ -114,6 +124,60 @@ export class ChronosComponent implements OnInit, OnDestroy {
 
       this.intervals = {}
 
+      this.subscription2 = this.error$.subscribe( error => {
+      
+        console.log("error",error,this.buttonWasPressed)
+        if( this.buttonWasPressed ){
+          this.apiError = true
+
+          return Swal.fire(
+            'Espera',
+            'Sucedio un error',
+            'error'
+          ).then( any =>  this.apiError = false )
+          
+        }
+        
+      })
+  
+      this.subscription3 = this.loaded$.subscribe( loaded => {
+  
+        console.log("loaded",loaded,this.buttonWasPressed)
+
+        this.store.dispatch(ChronosActions.offLoad());
+  
+        if(loaded && this.buttonWasPressed && !this.apiError){
+  
+          this.buttonWasPressed = false
+  
+          let self = this
+  
+          window.setTimeout(function(){ 
+            console.log("intervals",self.intervals)
+            console.log("here")
+            Object.keys(self.intervals).map( key => {
+              console.log("key",key)
+              clearInterval(self.intervals[key]);
+            })
+            console.log("after clear")
+            self.entities = []
+            self.store.dispatch(ChronosActions.loadChronos());           
+          }, 1000)
+
+          window.setTimeout(function(){
+            self.ngOnInit()
+          }, 1100)
+          
+  
+          return Swal.fire(
+            'Bien',
+            'Datos registrados',
+            'success'
+          )
+        }
+
+      })       
+
     }
   
     watchRecord(entity): void {
@@ -135,7 +199,7 @@ export class ChronosComponent implements OnInit, OnDestroy {
   
     editRecord(entity): void {
       this.isFormDisabled = false   
-      this.idsChecked = entity.rules
+      this.idsChecked = JSON.parse(JSON.stringify(entity.rules))
       this.cronjob = {
         id:entity.id,
         title:entity.title,
@@ -160,6 +224,8 @@ export class ChronosComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
       // prevent memory leak when component destroyed
       //this.subscription.unsubscribe();
+      this.subscription2.unsubscribe();
+      this.subscription3.unsubscribe();
     }
   
     ShowPicture(entity):void{
@@ -187,6 +253,16 @@ export class ChronosComponent implements OnInit, OnDestroy {
       this.modalService.open(this.content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
 
         console.log("result",result)
+        
+        if(this.idsChecked.length == 0)
+        {
+          return Swal.fire(
+            'Espera',
+            'Debe haber al menos una regla para guardar un timer',
+            'warning'
+          )
+        }
+        
         this.cronjob.rules = this.idsChecked
 
         if( !this.cronjob.title || !this.cronjob.supplier || !this.cronjob.description
@@ -195,6 +271,23 @@ export class ChronosComponent implements OnInit, OnDestroy {
           return Swal.fire(
             'Espera',
             'Todos los campos deben tener información relacionada',
+            'warning'
+          )
+        }
+
+        let titleRepeat = false
+
+        this.entities.map( row => {
+          if( row.title ===  this.cronjob.title  &&  row.id != this.cronjob.id ){
+            titleRepeat = true
+          }
+        })
+
+        if( titleRepeat )
+        {
+          return Swal.fire(
+            'Espera',
+            'El titulo debe ser unico',
             'warning'
           )
         }
@@ -255,43 +348,8 @@ export class ChronosComponent implements OnInit, OnDestroy {
       
       }    
   
-      this.modalService.dismissAll()
-  
-      this.loaded$.subscribe( loaded => {
-  
-        console.log("loaded",loaded,this.buttonWasPressed)
-  
-        if(loaded && this.buttonWasPressed ){
-  
-          this.buttonWasPressed = false
-  
-          let self = this
-  
-          window.setTimeout(function(){ //self.store.dispatch(ChronosActions.loadChronos());
-            console.log("intervals",self.intervals)
-            console.log("here")
-            Object.keys(self.intervals).map( key => {
-              console.log("key",key)
-              clearInterval(self.intervals[key]);
-            })
-            console.log("after clear")
-            self.entities = []
-            self.store.dispatch(ChronosActions.loadChronos());           
-          }, 1000)
-
-          window.setTimeout(function(){
-            self.ngOnInit()
-          }, 1100)
-          
-  
-          return Swal.fire(
-            'Bien',
-            'Datos registrados',
-            'success'
-          )
-        }
-      })    
-  
+      this.modalService.dismissAll()  
+      
     }
 
     onCheckChange2(entity,checked):void{

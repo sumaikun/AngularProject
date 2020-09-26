@@ -44,6 +44,7 @@
                   <th scope="col">handle</th>
                   <th scope="col">tags</th>
                   <th scope="col">chronos</th>
+                  <th scope="col">fecha</th>
                   <th scope="col">opciones</th>
                 </tr>
               </thead>
@@ -88,7 +89,11 @@
                   </td>
 
                   <td>
-                    <div>{{ entity.chronos }}</div>
+                    <div>{{ entity.chronos?.title }}</div>
+                  </td>
+
+                  <td>
+                    <div>{{ entity.updatedAt.split("T")[0] }}</div>
                   </td>
                       
                   <td class="text-right">
@@ -98,7 +103,7 @@
                       </a>
                       <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
                         <a class="dropdown-item" (click)="watchVariants(entity.shopifyProduct.product)" href="javascript:void(0)">Ver variantes</a>
-                        <a class="dropdown-item" (click)="watchVariants(entity.shopifyProduct.product)" href="javascript:void(0)">Recuperar esta versión</a>
+                        <a class="dropdown-item" (click)="recoverVersion(entity.shopifyProduct.product)" href="javascript:void(0)">Recuperar esta versión</a>
                       </div>
                     </div>
                   </td>
