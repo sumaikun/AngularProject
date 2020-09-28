@@ -65,6 +65,7 @@ export class ProductsUpdatesComponent implements OnInit {
   } 
 
   filterByDates() {
+    this.loading = true
     console.log(this.filter.fromDate,this.filter.toDate)
     if(this.filter.fromDate === null || this.filter.toDate === null)
     {
@@ -82,7 +83,8 @@ export class ProductsUpdatesComponent implements OnInit {
     this.productTraceService.findBetweenDates(this.filter.fromDate, this.filter.toDate).subscribe( data =>{
         console.log("data",data)
         this.data = data 
-    })
+        this.loading = false
+    },err => Swal.fire("Sucedio un error","No se pudo conectar con el servidor","error")  )
 
   }
 
@@ -158,10 +160,22 @@ export class ProductsUpdatesComponent implements OnInit {
   }
 
   returnInBatch(){
-    this.loading = true
-    const self = this
-    this.shopifyService.shopifyProductWithBatch(this.idsChecked).subscribe(  result => Swal.fire("Ok","Datos actualizados","success").then( data => self.loading = false ),
-    error =>  Swal.fire("Sucedio un error","No todos los productos pudieron regresar a esta versión","error").then( data => self.loading = false ) )
+    if(this.loading == false)
+    {
+      this.loading = true
+      const self = this
+      this.shopifyService.shopifyProductWithBatch(this.idsChecked).subscribe(  result =>{
+        if(this.idsChecked.length > 250)
+        {
+          Swal.fire("Ok","Los datos se enviaron a una cola","success").then( data => self.loading = false )
+        }else{
+          Swal.fire("Ok","Datos actualizados","success").then( data => self.loading = false )
+        }
+        
+      },
+      error =>  Swal.fire("Sucedio un error","No todos los productos pudieron regresar a esta versión","error").then( data => self.loading = false ) )
+    }
+    
   }
 
 }
