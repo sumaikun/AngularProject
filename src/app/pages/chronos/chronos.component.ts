@@ -182,11 +182,11 @@ export class ChronosComponent implements OnInit, OnDestroy {
   
     watchRecord(entity): void {
 
-      this.idsChecked = entity.rules
+      this.idsChecked = JSON.parse(JSON.stringify(entity.rules))
       this.cronjob = {
         id:entity.id,
         title:entity.title,
-        supplier:entity.supplier,
+        supplier:entity.supplier.id,
         description:entity.description,
         automatical:entity.automatical,
         rules:entity.rules,

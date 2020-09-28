@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,6 +28,10 @@ export class ShopifyService {
 
   updateProductOnShopify(id:String,data:any):any{
     return this.http.put(environment.serverUrl+"shopify/shopifyProduct/"+id,data)
+  }
+
+  shopifyProductWithBatch(data:any):any{
+    return this.http.put(environment.serverUrl+"shopify/shopifyProductWithBatch",data)
   }
 
 }

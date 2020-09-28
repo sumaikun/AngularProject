@@ -36,6 +36,8 @@ export class ProductsUpdatesComponent implements OnInit {
   data:any;
 
   selectedProduct:any
+
+  idsChecked:Array<string>
   
   constructor(private modalService: NgbModal,
     private shopifyService: ShopifyService,
@@ -48,6 +50,7 @@ export class ProductsUpdatesComponent implements OnInit {
       fromDate:null,
       toDate:null
     }
+    this.idsChecked = []
   }
 
   ShowPictureByUrl(url):void{
@@ -130,5 +133,35 @@ export class ProductsUpdatesComponent implements OnInit {
     });
   }
 
+  onCheckChange2(entity,checked):void{
+    console.log(entity,checked)
+
+    if(checked)
+    {
+      this.idsChecked.push(entity.id)
+    }else{
+      const index = this.idsChecked.indexOf(entity.id);
+      if (index > -1) {
+        this.idsChecked.splice(index, 1);
+      }
+    }
+
+  }
+
+  isItemChecked(id):boolean{
+    return this.idsChecked.includes(id)
+  }
+
+  selectAll(){
+    this.idsChecked = []
+    this.data.map( subdata => this.idsChecked.push(subdata.id) )
+  }
+
+  returnInBatch(){
+    this.loading = true
+    const self = this
+    this.shopifyService.shopifyProductWithBatch(this.idsChecked).subscribe(  result => Swal.fire("Ok","Datos actualizados","success").then( data => self.loading = false ),
+    error =>  Swal.fire("Sucedio un error","No todos los productos pudieron regresar a esta versión","error").then( data => self.loading = false ) )
+  }
 
 }

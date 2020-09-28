@@ -75,9 +75,11 @@
                               <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
                             </g>
                           </svg>
-                          <span  id="base-timer-label" class="base-timer__label" *ngIf="entity.automatical">
+                          <span  id="base-timer-label" class="base-timer__label"
+                          [ngStyle]="{'color': (entity.automatical) ? '#ffffff' : '#333364'}"
+                          >
                             <!-- Remaining time label -->
-                            {{  formatTimeLeft(entity) }}
+                            {{ formatTimeLeft(entity) }} 
                           </span>
                         </div>
 
@@ -202,7 +204,7 @@
   </div>
   <div class="modal-footer">     
     
-    <button type="button" class="btn btn-outline-dark" [disabled]="isFormDisabled"
+    <button type="button" class="btn btn-outline-dark" *ngIf="!isFormDisabled"
      (click)="modal.close('Save click')">Asociar</button>
       
   </div>

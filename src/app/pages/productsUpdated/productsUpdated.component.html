@@ -31,6 +31,8 @@
             </div>
             
           </div>
+
+          <div *ngIf="loading" class="loader" style="background:black" >Loading...</div>
            
           <div class="row" class="table-responsive" id="scrollarea-content">
             <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table align-items-center table-flush ">
@@ -52,7 +54,11 @@
                 <!--<tr *ngFor="let entity of (entities$ | async)">-->
                 <tr *ngFor=" let entity of  data "   > 
                   <td>
-                    <div class="pictureCell">
+                    <div class="form-check">
+                      <input type="checkbox" [disabled]="isFormDisabled"
+                       (change)="onCheckChange2(entity, $event.target.checked)" [checked]="isItemChecked(entity.id)">
+                    </div> 
+                    <div class="pictureCell">                     
                     <a href="javascript:void(0)" (click)="ShowPictureByUrl(entity.shopifyProduct.product.image?.src)"  
                     class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
                       <img style="width:30px;height: 30px;" alt="Image placeholder" 
@@ -112,10 +118,21 @@
                 </tr>
               </tbody>
             </table>
-          </div>
            
+          </div>
+          
+          <div>
+            
+            <br/>
+
+            <strong>Cantidad:</strong>{{ data?.length }}
+
+            <button class="btn btn-primary" (click)="selectAll()" >Seleccionar todo</button>
+
+            <button class="btn btn-primary" (click)="returnInBatch()" >Regresar en lote</button>
          
-         
+          </div>
+          
             
           </div>
         </div>
