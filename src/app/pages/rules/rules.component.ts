@@ -336,7 +336,7 @@ export class RulesComponent implements OnInit {
 
     if((this.rule.ruleType === "PRICES" && this.rule.then.includes("price*"))){
       const numberToMultiply = this.rule.then.replace("price*", '')
-      if (!Number.isInteger(numberToMultiply)) {
+      if ( isNaN(parseInt(numberToMultiply))) {
         return Swal.fire(
           'Espera',
           'Después de la palabra price*  debe aparecer un número, no se reconocio el número',
@@ -502,7 +502,7 @@ export class RulesComponent implements OnInit {
 
       }
       
-      if(rule.ruleType === "PRICES" || rule.ruleType === "COLOR")
+      if(rule.ruleType === "COLOR")
       {
         const results2 = this.rules.filter( frule =>  frule.ruleType === rule.ruleType && 
           frule.then === rule.then && frule.supplier === rule.supplier )
@@ -517,7 +517,9 @@ export class RulesComponent implements OnInit {
 
       if(rule.ruleType === "PRICES" ){
         const results = this.rules.filter( frule => frule.ruleType === rule.ruleType &&
-          frule.supplier === rule.supplier && frule.then && !frule.if && ( frule.fieldsToCheck.length == 0 || !frule.fieldsToCheck  ) ) 
+          frule.supplier === rule.supplier && frule.then && !frule.if &&  !frule.fieldsToCheck   ) 
+
+        console.log("results",results)
 
         if(results.length > 0)
         {
