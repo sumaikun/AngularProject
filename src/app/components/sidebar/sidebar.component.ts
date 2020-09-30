@@ -1,8 +1,9 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
-import { selectUser } from 'src/app/store/selectors/auth';
+import { selectUser, selectRole } from 'src/app/store/selectors/auth';
 import { environment } from '../../../environments/environment'
+
 
 declare interface RouteInfo {
     path: string;
@@ -26,6 +27,14 @@ export const ROUTES: RouteInfo[] = [
     { path: '/register', title: 'Register',  icon:'ni-circle-08 text-pink', class: '' }*/
 ];
 
+export const ROUTES2: RouteInfo[] = [
+  { path: '/dashboard', title: 'Dashboard',  icon: 'ni-tv-2 text-primary', class: '' },
+  { path: '/products', title: 'Catalogos',  icon:'ni-cart text-pink', class: '' },
+  { path: '/rules', title: 'Reglas',  icon:'ni-planet text-blue', class: '' },
+  { path: '/chronos', title: 'Crónograma',  icon:'ni-bullet-list-67 text-info', class: '' },
+  { path: '/productUpdated', title: 'Actualizaciones',  icon:'ni-bullet-list-67 text-danger', class: '' },
+];
+
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
@@ -44,7 +53,11 @@ export class SidebarComponent implements OnInit {
 
   user$ =  this.store.pipe(select(selectUser));
 
+  role$ =  this.store.pipe(select(selectRole));
+
   userPicture:string
+
+  role:String
 
   constructor(private router: Router, private store: Store<any>) { }
 
@@ -52,7 +65,17 @@ export class SidebarComponent implements OnInit {
 
     this.isCollapse = false
 
-    this.menuItems = ROUTES.filter(menuItem => menuItem);
+    this.role$.subscribe( role => {
+      console.log("role",role)
+      if( role === "ADMIN" )
+      {
+        this.menuItems = ROUTES.filter(menuItem => menuItem);
+      }else{
+        this.menuItems = ROUTES2.filter(menuItem => menuItem);
+      }
+    })
+
+   
     this.router.events.subscribe((event) => {
       this.isCollapsed = true;
     });

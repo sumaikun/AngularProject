@@ -45,6 +45,8 @@ export class ProductsComponent implements OnInit {
 
   idsChecked:Array<string>
 
+  rowsChecked:Array<string>
+
   textToSearch: string
 
   textToSearch2: string
@@ -56,6 +58,8 @@ export class ProductsComponent implements OnInit {
   currentVendor:string;
 
   tabMode:string;
+
+  copyProducts: string;
 
   constructor(private shopifyService: ShopifyService,
     private rulesService: RulesService,
@@ -79,9 +83,11 @@ export class ProductsComponent implements OnInit {
 
         this.products = products.products
 
-        console.log("this.products",this.products)
+        //console.log("this.products",this.products)
 
         //this.originalProducts = products.products
+
+        this.copyProducts = JSON.stringify(products.products)
 
         this.loading = false
         
@@ -108,6 +114,8 @@ export class ProductsComponent implements OnInit {
     this.tabMode = "combinedList"
 
     this.textToSearch2 = ""
+
+    this.rowsChecked = ["Title","body_html","vendor","product_type","handle","tags"]
   }
 
   ShowPicture(photoUrl):void{
@@ -164,7 +172,7 @@ export class ProductsComponent implements OnInit {
   }
 
   openCell(event){
-    console.log("dbl click",event.target,event.target.style.whiteSpace)
+    //console.log("dbl click",event.target,event.target.style.whiteSpace)
     if(event.target.style.whiteSpace.length == 0 || event.target.style.whiteSpace == "nowrap")
     {
       event.target.style.whiteSpace = "break-spaces"
@@ -174,7 +182,7 @@ export class ProductsComponent implements OnInit {
   }
 
   watchVariants(product){
-    console.log("product",product)
+    //console.log("product",product)
     this.openVariantsModal()
     this.selectedProduct = product
   }
@@ -222,6 +230,7 @@ export class ProductsComponent implements OnInit {
           && product.vendor ===  this.currentSupplier.vendorId ) ).subscribe( 
           (data: Array<any>)  => 
             {
+              Swal.fire('',"Reglas simuladas",'success')
               console.log(data)
               data.map(
                 subdata => {
@@ -236,17 +245,7 @@ export class ProductsComponent implements OnInit {
                   }
                 }
               )
-              /*this.products = data.sort(function (a, b) {
-                if (a.id > b.id) {
-                  return 1;
-                }
-                if (a.id < b.id) {
-                  return -1;
-                }
-                // a must be equal to b
-                return 0;
-              })*/
-            } 
+            }, error =>  Swal.fire('Espera',"sucedio un error en la simulación de datos",'error')
           )
       }
     }, (reason) => {
@@ -271,6 +270,27 @@ export class ProductsComponent implements OnInit {
 
   isItemChecked(id):boolean{
     return this.idsChecked.includes(id)
+  }
+
+  onCheckChange3(row,checked):void{
+    //console.log(row,checked)
+
+    if(checked)
+    {
+      this.rowsChecked.push(row)
+    }else{
+      const index = this.rowsChecked.indexOf(row);
+      if (index > -1) {
+        this.rowsChecked.splice(index, 1);
+        console.log("this.rowsChecked",this.rowsChecked)
+      }
+    }
+
+  }
+
+  isRowChecked(id):boolean{
+    //console.log("this.rowsChecked.includes(id)",this.rowsChecked.includes(id))
+    return this.rowsChecked.includes(id)
   }
 
   fullList(){
@@ -499,6 +519,12 @@ export class ProductsComponent implements OnInit {
       })
     }
     return this.supplierRules
+  }
+
+  removeVendorFilter(){
+    this.currentVendor = ""
+    this.currentSupplier = null
+    this.products = JSON.parse(this.copyProducts)
   }
 
 }

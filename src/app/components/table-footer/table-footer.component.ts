@@ -22,7 +22,7 @@ export class TableFooterComponent implements OnInit , OnChanges {
   constructor() { }
 
   ngOnInit() {
-    console.log("footer log",this.entities,this.rowsPerPage,Math.ceil(this.entities.length/this.rowsPerPage) )
+    //console.log("footer log",this.entities,this.rowsPerPage,Math.ceil(this.entities.length/this.rowsPerPage) )
     this.totalPages = Math.ceil(this.entities.length/this.rowsPerPage)
     this.currentPage = 1
   }

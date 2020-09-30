@@ -52,6 +52,10 @@
               </div>
             </div>
           </div>  
+
+
+          <button type="button" *ngIf="currentVendor"
+           class="btn btn-outline-dark" (click)="removeVendorFilter()" >Remover filtro de catalogo</button>
         
      
         </div>
@@ -92,6 +96,40 @@
               </div>
 
             </div>
+            <div class="row container" > <b>Seleccionador de columnas:</b> </div>
+            <div class="row container">
+
+              <div class="custom-control custom-checkbox mb-4 checkPadding">
+                <input  (change)="onCheckChange3('Title', $event.target.checked)" [checked]="isRowChecked('Title')" class="custom-control-input" id="customCheck1" type="checkbox">
+                <label class="custom-control-label" for="customCheck1">Title</label>
+              </div>
+
+              <div class="custom-control custom-checkbox mb-4 checkPadding">
+                <input (change)="onCheckChange3('body_html', $event.target.checked)" [checked]="isRowChecked('body_html')" class="custom-control-input" id="customCheck2" type="checkbox">
+                <label class="custom-control-label" for="customCheck2">body_html</label>
+              </div>
+
+              <div class="custom-control custom-checkbox mb-4 checkPadding">
+                <input (change)="onCheckChange3('vendor', $event.target.checked)" [checked]="isRowChecked('vendor')"  class="custom-control-input" id="customCheck3" type="checkbox">
+                <label class="custom-control-label" for="customCheck3">vendor</label>
+              </div>
+
+              <div class="custom-control custom-checkbox mb-4 checkPadding">
+                <input (change)="onCheckChange3('product_type', $event.target.checked)" [checked]="isRowChecked('product_type')"  class="custom-control-input" id="customCheck4" type="checkbox">
+                <label class="custom-control-label" for="customCheck4">product_type</label>
+              </div>
+
+              <div class="custom-control custom-checkbox mb-4 checkPadding">
+                <input (change)="onCheckChange3('handle', $event.target.checked)" [checked]="isRowChecked('handle')" class="custom-control-input" id="customCheck5" type="checkbox">
+                <label class="custom-control-label" for="customCheck5">handle</label>
+              </div>
+
+              <div class="custom-control custom-checkbox mb-4 checkPadding">
+                <input  (change)="onCheckChange3('tags', $event.target.checked)" [checked]="isRowChecked('tags')" class="custom-control-input" id="customCheck6" type="checkbox">
+                <label class="custom-control-label" for="customCheck6">tags</label>
+              </div>
+
+            </div>
            
 
            
@@ -129,12 +167,12 @@
                           <thead class="thead-light">
                             <tr>
                               <th scope="col">id</th>
-                              <th scope="col">title</th>
-                              <th scope="col">body_html</th>
-                              <th scope="col">vendor</th>
-                              <th scope="col">product_type</th>
-                              <th scope="col">handle</th>
-                              <th scope="col">tags</th>
+                              <th *ngIf="isRowChecked('Title')" scope="col">title</th>
+                              <th *ngIf="isRowChecked('body_html')" scope="col">body_html</th>
+                              <th *ngIf="isRowChecked('vendor')" scope="col">vendor</th>
+                              <th *ngIf="isRowChecked('product_type')" scope="col">product_type</th>
+                              <th *ngIf="isRowChecked('handle')" scope="col">handle</th>
+                              <th *ngIf="isRowChecked('tags')" scope="col">tags</th>
                               <th scope="col">opciones</th>
                             </tr>
                           </thead>
@@ -154,27 +192,27 @@
                                 </div>
                               </td>
         
-                              <td (dblclick)="openCell($event)">
+                              <td *ngIf="isRowChecked('Title')" (dblclick)="openCell($event)">
                                 {{ product.title }}
                               </td>
         
-                              <td (dblclick)="openCell($event)">
+                              <td *ngIf="isRowChecked('body_html')" (dblclick)="openCell($event)">
                                 {{ product.body_html }}
                               </td>
         
-                              <td>
+                              <td *ngIf="isRowChecked('vendor')">
                                 <div>{{ product.vendor }}</div>
                               </td>
         
-                              <td>
+                              <td *ngIf="isRowChecked('product_type')">
                                 <div>{{ product.product_type }}</div>
                               </td>
         
-                              <td>
+                              <td *ngIf="isRowChecked('handle')">
                                 <div>{{ product.handle }}</div>
                               </td>
         
-                              <td (dblclick)="openCell($event)">
+                              <td *ngIf="isRowChecked('tags')" (dblclick)="openCell($event)">
                                 {{ product.tags }}
                               </td>
                                   
@@ -206,12 +244,12 @@
                             <thead class="thead-light">
                               <tr>
                                 <th scope="col">id</th>
-                                <th scope="col">title</th>
-                                <th scope="col">body_html</th>
-                                <th scope="col">vendor</th>
-                                <th scope="col">product_type</th>
-                                <th scope="col">handle</th>
-                                <th scope="col">tags</th>
+                                <th *ngIf="isRowChecked('Title')" scope="col">title</th>
+                                <th *ngIf="isRowChecked('body_html')" scope="col">body_html</th>
+                                <th *ngIf="isRowChecked('vendor')" scope="col">vendor</th>
+                                <th *ngIf="isRowChecked('product_type')" scope="col">product_type</th>
+                                <th *ngIf="isRowChecked('handle')" scope="col">handle</th>
+                                <th *ngIf="isRowChecked('tags')" scope="col">tags</th>
                                 <th scope="col">opciones</th>
                               </tr>
                             </thead>
@@ -231,27 +269,27 @@
                                   </div>
                                 </td>
           
-                                <td (dblclick)="openCell($event)">
+                                <td *ngIf="isRowChecked('Title')" (dblclick)="openCell($event)">
                                   {{ product.title }}
                                 </td>
           
-                                <td (dblclick)="openCell($event)">
+                                <td *ngIf="isRowChecked('body_html')" (dblclick)="openCell($event)">
                                   {{ product.body_html }}
                                 </td>
           
-                                <td>
+                                <td *ngIf="isRowChecked('vendor')">
                                   <div>{{ product.vendor }}</div>
                                 </td>
           
-                                <td>
+                                <td *ngIf="isRowChecked('product_type')">
                                   <div>{{ product.product_type }}</div>
                                 </td>
           
-                                <td>
+                                <td *ngIf="isRowChecked('handle')">
                                   <div>{{ product.handle }}</div>
                                 </td>
           
-                                <td (dblclick)="openCell($event)">
+                                <td *ngIf="isRowChecked('tags')" (dblclick)="openCell($event)">
                                   {{ product.tags }}
                                 </td>
                                     
@@ -283,14 +321,14 @@
                             <thead class="thead-light">
                               <tr>
                                 <th scope="col">id</th>
-                                <th scope="col">title</th>
-                                <th scope="col">body_html</th>
-                                <th scope="col">vendor</th>
-                                <th scope="col">product_type</th>
-                                <th scope="col">handle</th>
-                                <th scope="col">tags</th>
+                                <th *ngIf="isRowChecked('Title')" scope="col">title</th>
+                                <th *ngIf="isRowChecked('body_html')" scope="col">body_html</th>
+                                <th *ngIf="isRowChecked('vendor')" scope="col">vendor</th>
+                                <th *ngIf="isRowChecked('product_type')" scope="col">product_type</th>
+                                <th *ngIf="isRowChecked('handle')" scope="col">handle</th>
+                                <th *ngIf="isRowChecked('tags')" scope="col">tags</th>
                                 <th scope="col">opciones</th>
-                              </tr>
+                                </tr>
                             </thead>
                             <tbody>
                               <!--<tr *ngFor="let entity of (entities$ | async)">-->
@@ -308,27 +346,27 @@
                                   </div>
                                 </td>
           
-                                <td (dblclick)="openCell($event)">
+                                <td *ngIf="isRowChecked('Title')" (dblclick)="openCell($event)">
                                   {{ product.title }}
                                 </td>
           
-                                <td (dblclick)="openCell($event)">
+                                <td *ngIf="isRowChecked('body_html')" (dblclick)="openCell($event)">
                                   {{ product.body_html }}
                                 </td>
           
-                                <td>
+                                <td *ngIf="isRowChecked('vendor')">
                                   <div>{{ product.vendor }}</div>
                                 </td>
           
-                                <td>
+                                <td *ngIf="isRowChecked('product_type')">
                                   <div>{{ product.product_type }}</div>
                                 </td>
           
-                                <td>
+                                <td *ngIf="isRowChecked('handle')">
                                   <div>{{ product.handle }}</div>
                                 </td>
           
-                                <td (dblclick)="openCell($event)">
+                                <td *ngIf="isRowChecked('tags')" (dblclick)="openCell($event)">
                                   {{ product.tags }}
                                 </td>
                                     
@@ -366,7 +404,7 @@
               <div class="row">
                 <div class="col-lg-3 col-md-3" >
                   <br/>
-                  <button type="button"  (click)="openRulesModal()" class="btn btn-default">Probar reglas</button>
+                  <button type="button" *ngIf="!loading"  (click)="openRulesModal()" class="btn btn-default">Probar reglas</button>
                 </div>                
               </div>
               <div class="row" style="overflow: scroll;" >

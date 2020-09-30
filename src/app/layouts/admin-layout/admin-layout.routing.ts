@@ -12,14 +12,15 @@ import { SuppliersFormComponent } from '../../pages/suppliers-form/suppliers-for
 import { RulesComponent } from '../../pages/rules/rules.component'
 import { ChronosComponent } from '../../pages/chronos/chronos.component'
 import { ProductsUpdatesComponent } from '../../pages/productsUpdated/productsUpdated.component'
-
+import { ProductsComponent } from 'src/app/pages/products/products.component';
 //Resolvers
 import { UsersResolver } from "../../resolvers/users.resolver";
 import { SuppliersResolver } from "../../resolvers/suppliers.resolver";
 
 //Guards
 import { AuthGuardService as AuthGuard } from "../../services/auth-guard.service"
-import { ProductsComponent } from 'src/app/pages/products/products.component';
+import { AdminGuardService as AdminGuard } from "../../services/admin-guard.service"
+
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent,
@@ -33,49 +34,49 @@ export const AdminLayoutRoutes: Routes = [
         resolve:{ 
             entities:UsersResolver
         },
-        canActivate: [AuthGuard]  
+        canActivate: [AuthGuard,AdminGuard]  
     },
     { path: 'user-form',       component:UserFormComponent,
         resolve:{ 
             entities:UsersResolver
         },
-        canActivate: [AuthGuard]  
+        canActivate: [AuthGuard,AdminGuard]  
     },
     { path: 'user-form/:mode',       component:UserFormComponent,
         resolve:{ 
             entities:UsersResolver
         },
-        canActivate: [AuthGuard]    
+        canActivate: [AuthGuard,AdminGuard]    
     },
     { path: 'user-form/:mode/:id',       component:UserFormComponent,
         resolve:{ 
             entities:UsersResolver
         },
-        canActivate: [AuthGuard]    
+        canActivate: [AuthGuard,AdminGuard]    
     },
     { path: 'suppliers',          component: SuppliersComponent,
         resolve:{ 
             entities:SuppliersResolver
         },
-        canActivate: [AuthGuard]  
+        canActivate: [AuthGuard,AdminGuard]  
     },
     { path: 'supplier-form',       component:SuppliersFormComponent,
         resolve:{ 
             entities:SuppliersResolver
         },
-        canActivate: [AuthGuard]  
+        canActivate: [AuthGuard,AdminGuard]  
     },
     { path: 'supplier-form/:mode',       component:SuppliersFormComponent,
         resolve:{ 
             entities:SuppliersResolver
         },
-        canActivate: [AuthGuard]    
+        canActivate: [AuthGuard,AdminGuard]    
     },
     { path: 'supplier-form/:mode/:id',       component:SuppliersFormComponent,
         resolve:{ 
             entities:SuppliersResolver
         },
-        canActivate: [AuthGuard]    
+        canActivate: [AuthGuard,AdminGuard]    
     },
     { path: 'products',          component: ProductsComponent,
         
