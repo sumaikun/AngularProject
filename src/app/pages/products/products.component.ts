@@ -293,6 +293,23 @@ export class ProductsComponent implements OnInit {
     return this.rowsChecked.includes(id)
   }
 
+  filterOnVariants(product,textToSearch){
+    let isOnVariant = false
+    product.variants.map( variant => {
+      if( variant.id?.toString().includes(textToSearch) ||
+          variant.title?.toLowerCase().includes(textToSearch.toLocaleLowerCase()) ||
+          variant.option1?.toLowerCase().includes(textToSearch.toLocaleLowerCase()) ||
+          variant.sku?.toLowerCase().includes(textToSearch.toLocaleLowerCase()) ||
+          variant.price?.toString().includes(textToSearch.toLocaleLowerCase()))
+        {
+          isOnVariant = true
+        }
+      }       
+    )
+
+    return isOnVariant
+  }
+
   fullList(){
     //console.log(this.textToSearch)
     if(this.textToSearch)
@@ -305,7 +322,8 @@ export class ProductsComponent implements OnInit {
         product.handle?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.id?.toString().includes(this.textToSearch) ||
-        product.originalId?.toString().includes(this.textToSearch)
+        product.originalId?.toString().includes(this.textToSearch) ||
+        this.filterOnVariants(product,this.textToSearch)
       ).sort(function (a, b) {
         if (a.id > b.id) {
           return 1;
@@ -354,7 +372,8 @@ export class ProductsComponent implements OnInit {
         product.product_type?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.handle?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
-        product.id?.toString().includes(this.textToSearch)
+        product.id?.toString().includes(this.textToSearch) ||
+        this.filterOnVariants(product,this.textToSearch)
       ).sort(function (a, b) {
         if (a.id > b.id) {
           return 1;
@@ -413,7 +432,8 @@ export class ProductsComponent implements OnInit {
         product.product_type?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.handle?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
         product.tags?.toLowerCase().includes(this.textToSearch.toLocaleLowerCase()) ||
-        product.originalId?.toString().includes(this.textToSearch)
+        product.originalId?.toString().includes(this.textToSearch) ||
+        this.filterOnVariants(product,this.textToSearch)
       ).sort(function (a, b) {
         if (a.id > b.id) {
           return 1;

@@ -52,7 +52,7 @@
               </thead>
               <tbody>
                 <!--<tr *ngFor="let entity of (entities$ | async)">-->
-                <tr *ngFor=" let entity of  data "   > 
+                <tr *ngFor=" let entity of  data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) "   > 
                   <td>
                     <div class="form-check">
                       <input type="checkbox" [disabled]="isFormDisabled"
@@ -123,14 +123,17 @@
           
           <div>
             
+            <table-footer [entities]="data" [rowsPerPage]="rowsPerPage" (pageChanged)="onPageChange($event)" ></table-footer>
             <br/>
 
-            <strong>Cantidad:</strong>{{ data?.length }}
-
+            <strong>Cantidad:</strong>{{ data?.length }}           
+         
+          </div>
+          <br/>
+          <div>
             <button class="btn btn-primary" (click)="selectAll()" >Seleccionar todo</button>
 
             <button class="btn btn-primary" (click)="returnInBatch()" >Regresar en lote</button>
-         
           </div>
           
             

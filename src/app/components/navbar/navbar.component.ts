@@ -67,7 +67,8 @@ export class NavbarComponent implements OnInit {
 
   checkRoute(){
     //console.log("trying to check route",this.router)
-    if(this.router.url.includes("users") || this.router.url.includes("suppliers") || this.router.url.includes("rules") )
+    if(this.router.url.includes("users") || this.router.url.includes("suppliers") || this.router.url.includes("rules")
+    || this.router.url.includes("productUpdated") )
     {
       return true
     }

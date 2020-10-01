@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { Store, select } from "@ngrx/store"
 import { SuppliersActions, RulesActions } from "../../store/actions"
@@ -14,7 +14,7 @@ import { RulesService } from '../../services/rules';
   templateUrl: './rules.component.html',
   styleUrls: ['./rules.component.scss']
 })
-export class RulesComponent implements OnInit {
+export class RulesComponent implements OnInit , OnDestroy {
 
   error$ = this.store.pipe(select(selectError));
 
@@ -165,9 +165,7 @@ export class RulesComponent implements OnInit {
   
   ngOnInit(): void {
 
-    this.rowsPerPage = 10
-    this.page = 0
-
+    
     this.store.dispatch(RulesActions.offLoad());
 
     this.store.dispatch(SuppliersActions.loadSuppliers());
@@ -196,6 +194,11 @@ export class RulesComponent implements OnInit {
 
 
 
+  }
+
+  onPageChange(page:number):void {
+    console.log("page to change",page)
+    this.page = page
   }
 
   createRule(){
@@ -616,7 +619,7 @@ export class RulesComponent implements OnInit {
 
   comeBackVersions( version ){
     console.log("version",version)
-
+    this.buttonWasPressed = true
     Swal.fire({
       title: '¿Estas seguro ?',
       text: "La regla y sus condiciones en el chronos cambiara",

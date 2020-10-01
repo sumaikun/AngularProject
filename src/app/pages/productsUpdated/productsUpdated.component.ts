@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core'
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core'
 import { ShopifyService } from '../../services/shopify.service'
 import { ProductTraceService } from '../../services/product-trace'
 import { environment } from '../../../environments/environment'
@@ -6,6 +6,8 @@ import { PictureModalComponent } from '../../components/picture-modal/picture-mo
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2' 
 import * as moment from 'moment'
+import { SearchService } from "../../services/search.service"
+import { Subscription } from 'rxjs'
 
 
 @Component({
@@ -13,7 +15,7 @@ import * as moment from 'moment'
   templateUrl: './productsUpdated.component.html',
   styleUrls: ['./productsUpdated.component.scss']
 })
-export class ProductsUpdatesComponent implements OnInit {
+export class ProductsUpdatesComponent implements OnInit, OnDestroy {
 
   @ViewChild( PictureModalComponent ) pictureModal: PictureModalComponent ;
 
@@ -35,15 +37,69 @@ export class ProductsUpdatesComponent implements OnInit {
 
   data:any;
 
+  copyData:any;
+
   selectedProduct:any
 
   idsChecked:Array<string>
+
+  subscription: Subscription;
+  
   
   constructor(private modalService: NgbModal,
+    private searchService: SearchService,
     private shopifyService: ShopifyService,
-    private productTraceService: ProductTraceService) { }
+    private productTraceService: ProductTraceService) {
+      searchService.clear()
+
+      this.subscription = searchService.textToSearch$.subscribe( text => {
+
+        if(text.length > 0 && this.data)
+        {
+          //this.data = []
+
+          const textToSearch = text.toLocaleLowerCase()
+
+          console.log("textToSearch",textToSearch)
+          
+          
+
+          this.data = this.copyData.filter( subdata => 
+            subdata.chronos?.title?.toLocaleLowerCase().includes(textToSearch) ||
+            subdata.shopifyProduct.product.title?.toLowerCase().includes(textToSearch) ||
+            subdata.shopifyProduct.product.body_html?.toLowerCase().includes(textToSearch) ||
+            subdata.shopifyProduct.product.vendor?.toLowerCase().includes(textToSearch) ||
+            subdata.shopifyProduct.product.product_type?.toLowerCase().includes(textToSearch) ||
+            subdata.shopifyProduct.product.handle?.toLowerCase().includes(textToSearch) ||
+            subdata.shopifyProduct.product.tags?.toLowerCase().includes(textToSearch) ||
+            this.filterOnVariants(subdata.shopifyProduct.product,textToSearch)
+          ) 
+       
+        }
+       
+    })    
+  }
+
+  filterOnVariants(product,textToSearch){
+    let isOnVariant = false
+    product.variants.map( variant => {
+      if( variant.id?.toString().includes(textToSearch) ||
+          variant.title?.toLowerCase().includes(textToSearch.toLocaleLowerCase()) ||
+          variant.option1?.toLowerCase().includes(textToSearch.toLocaleLowerCase()) ||
+          variant.sku?.toLowerCase().includes(textToSearch.toLocaleLowerCase()) ||
+          variant.price?.toString().includes(textToSearch.toLocaleLowerCase()))
+        {
+          isOnVariant = true
+        }
+      }       
+    )
+
+    return isOnVariant
+  }
 
   ngOnInit(): void {
+    this.rowsPerPage = 150
+    this.page = 0
     this.appENV = environment
     this.loading = false
     this.filter = {
@@ -51,6 +107,13 @@ export class ProductsUpdatesComponent implements OnInit {
       toDate:null
     }
     this.idsChecked = []
+    this.data = []
+    
+  }
+
+  ngOnDestroy() {
+    // prevent memory leak when component destroyed
+    this.subscription.unsubscribe();
   }
 
   ShowPictureByUrl(url):void{
@@ -83,6 +146,7 @@ export class ProductsUpdatesComponent implements OnInit {
     this.productTraceService.findBetweenDates(this.filter.fromDate, this.filter.toDate).subscribe( data =>{
         console.log("data",data)
         this.data = data 
+        this.copyData = JSON.parse(JSON.stringify(data))
         this.loading = false
     },err => Swal.fire("Sucedio un error","No se pudo conectar con el servidor","error")  )
 
