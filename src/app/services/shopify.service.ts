@@ -34,4 +34,12 @@ export class ShopifyService {
     return this.http.put(environment.serverUrl+"shopify/shopifyProductWithBatch",data)
   }
 
+  getBackupByDayDate(dayDate:String):any{
+    return this.http.get(environment.serverUrl+"shopify/downloadBackup/"+dayDate)
+  }
+
+  restoreBackupByDayDate(dayDate:String):any{
+    return this.http.get(environment.serverUrl+"shopify/restoreBackup/"+dayDate)
+  }
+
 }

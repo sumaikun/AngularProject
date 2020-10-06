@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   error$ = this.store.pipe(select(selectError));
   loaded$ =  this.store.pipe(select(selectEntityLoaded));
   token$ = this.store.pipe(select(selectToken));
-  
+  isButtonPressed: boolean = false;
   
   constructor(private store: Store<any>,private router: Router) {}
 
@@ -29,9 +29,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.error$.subscribe( data => { 
       
+
+
       console.log("error",data)
       
-      if(data && data.error )
+      if(data && data.error && this.isButtonPressed )
       {
         if(data.error.statusCode == 401){
           return Swal.fire(
@@ -57,12 +59,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   authenticate(){
-    console.log(this.username,this.password)
     
     this.store.dispatch(AuthActions.auth({
       username:this.username,
       password:this.password
     }))
+
+    this.isButtonPressed = true
 
     
 

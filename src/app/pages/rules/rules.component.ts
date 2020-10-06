@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { Store, select } from "@ngrx/store"
 import { SuppliersActions, RulesActions } from "../../store/actions"
@@ -14,7 +14,7 @@ import { RulesService } from '../../services/rules';
   templateUrl: './rules.component.html',
   styleUrls: ['./rules.component.scss']
 })
-export class RulesComponent implements OnInit , OnDestroy {
+export class RulesComponent implements OnInit {
 
   error$ = this.store.pipe(select(selectError));
 
@@ -147,7 +147,13 @@ export class RulesComponent implements OnInit , OnDestroy {
       })    
   }
 
+  onPageChange(page:number):void {
+    console.log("page to change",page)
+    this.page = page
+  }
+
   ngOnDestroy() {
+    console.log("destroy component")
     // prevent memory leak when component destroyed
     this.subscription.unsubscribe();
     this.subscription2.unsubscribe();
@@ -165,7 +171,9 @@ export class RulesComponent implements OnInit , OnDestroy {
   
   ngOnInit(): void {
 
-    
+    this.rowsPerPage = 10
+    this.page = 0
+
     this.store.dispatch(RulesActions.offLoad());
 
     this.store.dispatch(SuppliersActions.loadSuppliers());
@@ -194,11 +202,6 @@ export class RulesComponent implements OnInit , OnDestroy {
 
 
 
-  }
-
-  onPageChange(page:number):void {
-    console.log("page to change",page)
-    this.page = page
   }
 
   createRule(){

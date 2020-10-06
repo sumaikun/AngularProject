@@ -8,7 +8,8 @@ import Swal from 'sweetalert2'
 import * as moment from 'moment'
 import { SearchService } from "../../services/search.service"
 import { Subscription } from 'rxjs'
-
+import { selectRole } from 'src/app/store/selectors/auth';
+import { Store, select } from "@ngrx/store";
 
 @Component({
   selector: 'app-products-updated',
@@ -35,6 +36,8 @@ export class ProductsUpdatesComponent implements OnInit, OnDestroy {
 
   filter:any;
 
+  backupDate:any;
+
   data:any;
 
   copyData:any;
@@ -44,10 +47,14 @@ export class ProductsUpdatesComponent implements OnInit, OnDestroy {
   idsChecked:Array<string>
 
   subscription: Subscription;
+
+  rol$ =  this.store.pipe(select(selectRole));
   
+  rol:string
   
   constructor(private modalService: NgbModal,
     private searchService: SearchService,
+    private store: Store<any>,
     private shopifyService: ShopifyService,
     private productTraceService: ProductTraceService) {
       searchService.clear()
@@ -108,7 +115,7 @@ export class ProductsUpdatesComponent implements OnInit, OnDestroy {
     }
     this.idsChecked = []
     this.data = []
-    
+    this.rol$.subscribe( role => this.rol = role ) 
   }
 
   ngOnDestroy() {
@@ -231,7 +238,7 @@ export class ProductsUpdatesComponent implements OnInit, OnDestroy {
       this.shopifyService.shopifyProductWithBatch(this.idsChecked).subscribe(  result =>{
         if(this.idsChecked.length > 250)
         {
-          Swal.fire("Ok","Los datos se enviaron a una cola","success").then( data => self.loading = false )
+          Swal.fire("Ok","Los datos se enviaron a una cola para su actualización","success").then( data => self.loading = false )
         }else{
           Swal.fire("Ok","Datos actualizados","success").then( data => self.loading = false )
         }
@@ -240,6 +247,103 @@ export class ProductsUpdatesComponent implements OnInit, OnDestroy {
       error =>  Swal.fire("Sucedio un error","No todos los productos pudieron regresar a esta versión","error").then( data => self.loading = false ) )
     }
     
+  }
+
+  downloadBackupByDate(){
+    //console.log("backupDate",this.backupDate)
+
+    if(!this.backupDate)
+    {
+      return Swal.fire("Espera","Debes poner una fecha para este proceso","warning")
+    }
+
+    this.shopifyService.getBackupByDayDate(this.backupDate).subscribe( res => {
+      
+      let arrData = []
+      
+      res.map( data => {
+        arrData.push( data.shopifyProduct )
+      })
+
+      this.csvExport(arrData)
+
+    })
+    
+  }
+
+  csvExport(arrData) {
+      
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += [
+      Object.keys(arrData[0]).join(";"),
+      ...arrData.map(item =>{
+        //console.log("Object.values(item)",Object.values(item))
+        
+        let returnValues = []
+        
+        Object.values(item).map(
+          data => {
+            if(this.isString(data))
+            {
+              returnValues.push(data.toString().replace(/(\r\n|\n|\r)/gm, ""))
+            }
+            else{
+              returnValues.push(JSON.stringify(data))
+            }
+          }
+        )
+        //console.log("returnValues",returnValues)
+        return returnValues.join(";")
+      })
+    ]
+      .join("\n")
+      .replace(/(^\[)|(\]$)/gm, "");
+
+    //console.log("csvContent",csvContent)
+
+    //console.log("csvArray",csvArray)
+
+    const data = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", data);
+    link.setAttribute("download", "backup.csv");
+    link.click();
+  }
+
+  isString (obj) {
+    return (Object.prototype.toString.call(obj) === '[object String]');
+  }
+
+  restoreBackupByDate(){
+
+    if(!this.backupDate)
+    {
+      return Swal.fire("Espera","Debes poner una fecha para este proceso","warning")
+    }
+
+    Swal.fire({
+      title: '¿Esta seguro?',
+      text: "Esto modificara la información en la tienda",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, adelante!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        this.shopifyService.getBackupByDayDate(this.backupDate).subscribe( res => {
+          if(res.length > 0 )
+            this.shopifyService.restoreBackupByDayDate(this.backupDate).subscribe( 
+              result => Swal.fire("Ok","Los datos se enviaron a una cola para su actualización","success"),
+              error =>  Swal.fire("Sucedio un error","No se pudo regresar a esta versión","error")
+            )
+          else Swal.fire("No hay datos para hacer backup en esta fecha","","warning")              
+        },error =>  Swal.fire("Sucedio un error","","error") )       
+        
+            
+      }
+    })
   }
 
 }
