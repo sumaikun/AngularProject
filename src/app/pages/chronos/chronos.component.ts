@@ -18,6 +18,8 @@ import { RulesService } from '../../services/rules'
 
 import * as moment from 'moment'
 
+import { selectRole } from 'src/app/store/selectors/auth';
+
 @Component({
   selector: 'app-chronos',
   templateUrl: './chronos.component.html',
@@ -74,6 +76,12 @@ export class ChronosComponent implements OnInit, OnDestroy {
   subscription3: Subscription;
 
   apiError: boolean
+
+  wasDeleteAction: boolean
+
+  rol$ =  this.store.pipe(select(selectRole));
+  
+  rol:string
 
   constructor(private store: Store<any>,
     private rulesService: RulesService,
@@ -145,6 +153,37 @@ export class ChronosComponent implements OnInit, OnDestroy {
         console.log("loaded",loaded,this.buttonWasPressed)
 
         this.store.dispatch(ChronosActions.offLoad());
+
+        if( this.wasDeleteAction && this.buttonWasPressed && !this.apiError ){
+  
+          this.buttonWasPressed = false
+  
+          let self = this
+
+          window.setTimeout(function(){ 
+            console.log("intervals",self.intervals)
+            console.log("here")
+            Object.keys(self.intervals).map( key => {
+              console.log("key",key)
+              clearInterval(self.intervals[key]);
+            })
+            console.log("after clear")
+            self.entities = []
+            self.store.dispatch(ChronosActions.loadChronos());           
+          }, 1000)
+  
+          window.setTimeout(function(){
+            self.ngOnInit()
+          }, 1100)
+          
+          this.wasDeleteAction = false
+  
+          return Swal.fire(
+            'Bien',
+            'Datos eliminados',
+            'success'
+          )
+        }
   
         if(loaded && this.buttonWasPressed && !this.apiError){
   
@@ -176,7 +215,9 @@ export class ChronosComponent implements OnInit, OnDestroy {
           )
         }
 
-      })       
+      })
+      
+      this.rol$.subscribe( role => this.rol = role ) 
 
     }
   
@@ -444,6 +485,24 @@ export class ChronosComponent implements OnInit, OnDestroy {
     
       // The output in MM:SS format
       return `${hours}:${minutes}:${parseInt(secondsString)}`;
+    }
+
+    deleteRecord(data){
+      this.buttonWasPressed = true
+      this.wasDeleteAction = true
+      Swal.fire({
+        title: '¿Estas seguro ?',
+        html: "Esta información sera borrada y no podra ser recuperada",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si ¡adelante!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.store.dispatch(ChronosActions.deleteChronos({ id:data.id }))
+        }
+      })
     }
 
 }

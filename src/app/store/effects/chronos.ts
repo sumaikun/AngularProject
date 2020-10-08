@@ -99,6 +99,28 @@ updatedChronosByID$ = createEffect(() =>
   )
 );
 
+deleteChronos$ = createEffect(() =>
+  this.actions$.pipe(
+    ofType(ChronosActions.deleteChronos),
+    switchMap((any) =>
+      this.entityService.deleteEntity(any["id"]).pipe(
+        map((res: any) =>
+          ChronosActions.deleteChronosSuccess({
+            item: null
+          })
+        ),
+        catchError(error =>
+          of(
+            ChronosActions.deleteChronosFail({
+              error
+            })
+          )
+        )
+      )
+    )
+  )
+);
+
   constructor(
     private actions$: Actions,
     private entityService: ChronosService

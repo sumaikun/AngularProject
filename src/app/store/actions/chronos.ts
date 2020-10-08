@@ -15,6 +15,9 @@ export enum ChronosActionTypes {
   CreateChronos = "[Chronos] Create Chronos",
   CreateChronosSuccess = "[Chronos] Create Chronos Success",
   CreateChronosFail = "[Chronos] Create Chronos Fail",
+  DeleteChronos = "[Chronos] Delete Chronos",
+  DeleteChronosSuccess = "[Chronos] Delete Chronos Success",
+  DeleteChronosFail = "[Chronos] Delete Chronos Fail",
   OffLoad = "[Chronos] OffLoad"
 }
 
@@ -80,6 +83,24 @@ export const createChronosFail = createAction(
     error: Error | any;
   }>()
 );
+
+export const deleteChronos = createAction(
+  ChronosActionTypes.DeleteChronos,
+  props<{ id: string }>()
+);
+
+export const deleteChronosSuccess = createAction(
+  ChronosActionTypes.DeleteChronosSuccess,
+  props<{}>()
+);
+
+export const deleteChronosFail = createAction(
+  ChronosActionTypes.DeleteChronosFail,
+  props<{
+    error: Error | any;
+  }>()
+);
+
 export const fromChronosActions = {
   loadChronos,
   loadChronosFail,
@@ -93,5 +114,8 @@ export const fromChronosActions = {
   updateChronos,
   updateChronosSuccess,
   updateChronosFail,
+  deleteChronos,
+  deleteChronosSuccess,
+  deleteChronosFail,
   offLoad
 };

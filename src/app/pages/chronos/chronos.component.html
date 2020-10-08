@@ -91,7 +91,9 @@
                       <br/>
                       <a style="width:100%" href="javascript:void(0)" (click)="watchRecord(entity)" class="btn btn-primary">Ver</a>
                       <br/>
-                      <a style="width:100%" href="javascript:void(0)" (click)="editRecord(entity)" class="btn btn-danger">Editar</a>
+                      <a style="width:100%" href="javascript:void(0)" (click)="editRecord(entity)" class="btn btn-warning">Editar</a>
+                      <br/>
+                      <a *ngIf=" rol === 'ADMIN' " style="width:100%" href="javascript:void(0)" (click)="deleteRecord(entity)" class="btn btn-danger">Eliminar</a>
                     </div>
                 </div>
             </div>                  

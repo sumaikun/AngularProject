@@ -82,6 +82,19 @@ const _reducer = createReducer(
       loaded:true
     });    
   }),
+  on(ChronosActions.deleteChronosFail, (state, { error }) => {
+    return {
+      ...state,
+      error,
+      loaded:false
+    };
+  }),
+  on(ChronosActions.deleteChronosSuccess, (state, { }) => { 
+    return  {
+      ...state,
+      loaded:true
+    }    
+  }),
   on(ChronosActions.offLoad, (state) => {    
     return{
       ...state,

@@ -83,6 +83,19 @@ const _reducer = createReducer(
       loaded:true
     });    
   }),
+  on(RulesActions.deleteRuleFail, (state, { error }) => {
+    return {
+      ...state,
+      error,
+      loaded:false
+    };
+  }),
+  on(RulesActions.deleteRuleSuccess, (state, { item }) => {    
+    return {
+      ...state,
+      loaded:true
+    }    
+  }),
   on(RulesActions.offLoad, (state) => {    
     return{
       ...state,

@@ -15,6 +15,9 @@ export enum RuleActionTypes {
   CreateRule = "[Rule] Create Rule",
   CreateRuleSuccess = "[Rule] Create Rule Success",
   CreateRuleFail = "[Rule] Create Rule Fail",
+  DeleteRule = "[Rule] Delete Rule",
+  DeleteRuleSuccess = "[Rule] Delete Rule Success",
+  DeleteRuleFail = "[Rule] Delete Rule Fail",
   OffLoad = "[Rule] OffLoad"
 }
 
@@ -81,6 +84,23 @@ export const createRuleFail = createAction(
   }>()
 );
 
+export const deleteRule = createAction(
+  RuleActionTypes.DeleteRule,
+  props<{ id: string }>()
+);
+
+export const deleteRuleSuccess = createAction(
+  RuleActionTypes.DeleteRuleSuccess,
+  props<{ item: any }>()
+);
+
+export const deleteRuleFail = createAction(
+  RuleActionTypes.DeleteRuleFail,
+  props<{
+    error: Error | any;
+  }>()
+);
+
 export const fromRuleActions = {
   loadRules,
   loadRulesFail,
@@ -94,5 +114,8 @@ export const fromRuleActions = {
   updateRule,
   updateRuleSuccess,
   updateRuleFail,
+  deleteRule,
+  deleteRuleSuccess,
+  deleteRuleFail,
   offLoad
 };

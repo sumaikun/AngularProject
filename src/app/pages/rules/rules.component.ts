@@ -8,6 +8,7 @@ import Swal from 'sweetalert2'
 import { SearchService } from "../../services/search.service"
 import { Subscription }   from 'rxjs';
 import { RulesService } from '../../services/rules';
+import { selectRole } from 'src/app/store/selectors/auth';
 
 @Component({
   selector: 'app-rules',
@@ -56,6 +57,12 @@ export class RulesComponent implements OnInit {
 
   apiError: boolean
 
+  wasDeleteAction: boolean
+
+  rol$ =  this.store.pipe(select(selectRole));
+  
+  rol:string
+
   constructor(private modalService: NgbModal,
     private searchService: SearchService,
     private rulesService: RulesService,
@@ -64,6 +71,8 @@ export class RulesComponent implements OnInit {
       this.apiError = false
 
       searchService.clear()
+
+      this.wasDeleteAction = false
 
       this.subscription = searchService.textToSearch$.subscribe( text => {
 
@@ -113,6 +122,15 @@ export class RulesComponent implements OnInit {
             ).then( any =>  this.apiError = false )
           }
 
+          if(error.error && error.error.statusCode === 406 )
+          {
+            return Swal.fire(
+              'Espera',
+              'Hay chronos los cuales usan esta regla para actualizar, remuevela del chronos y vuelve para continuar',
+              'warning'
+            ).then( any =>  this.apiError = false )
+          }
+
           return Swal.fire(
             'Espera',
             'Sucedio un error',
@@ -128,6 +146,24 @@ export class RulesComponent implements OnInit {
         console.log("loaded",loaded,this.buttonWasPressed,this.apiError)
 
         this.store.dispatch(RulesActions.offLoad());
+
+
+        if( this.wasDeleteAction && this.buttonWasPressed && !this.apiError ){
+  
+          this.buttonWasPressed = false
+  
+          let self = this
+  
+          window.setTimeout(function(){ self.store.dispatch(RulesActions.loadRules()); }, 1000)
+          
+          this.wasDeleteAction = false
+  
+          return Swal.fire(
+            'Bien',
+            'Datos eliminados',
+            'success'
+          )
+        }
   
         if(loaded && this.buttonWasPressed && !this.apiError ){
   
@@ -144,6 +180,8 @@ export class RulesComponent implements OnInit {
             'success'
           )
         }
+
+
       })    
   }
 
@@ -200,8 +238,7 @@ export class RulesComponent implements OnInit {
 
     this.isFormDisabled = false
 
-
-
+    this.rol$.subscribe( role => this.rol = role ) 
   }
 
   createRule(){
@@ -550,7 +587,7 @@ export class RulesComponent implements OnInit {
   }
 
   getSupplierName( supplierId ){
-    return this.suppliers.filter( data => data.id === supplierId )[0].name 
+    return this.suppliers.filter( data => data.id === supplierId )[0]?.name 
   }
 
   getRuleTypeName( name ){
@@ -621,7 +658,7 @@ export class RulesComponent implements OnInit {
   }
 
   comeBackVersions( version ){
-    console.log("version",version)
+    //console.log("version",version)
     this.buttonWasPressed = true
     Swal.fire({
       title: '¿Estas seguro ?',
@@ -727,6 +764,24 @@ export class RulesComponent implements OnInit {
     this.modalService.open(this.content3, {ariaLabelledBy: 'modal-basic-title', size:'lg'}).result.then((result) => {
     }, (reason) => {
       console.log("reason",reason)
+    })
+  }
+
+  deleteRule(rule){
+    this.buttonWasPressed = true
+    this.wasDeleteAction = true
+    Swal.fire({
+      title: '¿Estas seguro ?',
+      html: "Esta información sera borrada y no podra ser recuperada",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si ¡adelante!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.store.dispatch(RulesActions.deleteRule({ id:rule.id }))
+      }
     })
   }
 

@@ -98,6 +98,28 @@ updatedRule$ = createEffect(() =>
   )
 );
 
+deleteRule$ = createEffect(() =>
+  this.actions$.pipe(
+    ofType(RulesActions.deleteRule),
+    switchMap((any) =>
+      this.entityService.deleteEntity(any["id"]).pipe(
+        map((res: any) =>
+          RulesActions.deleteRuleSuccess({
+            item: null
+          })
+        ),
+        catchError(error =>
+          of(
+            RulesActions.deleteRuleFail({
+              error
+            })
+          )
+        )
+      )
+    )
+  )
+);
+
   constructor(
     private actions$: Actions,
     private entityService: RulesService
