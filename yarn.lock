@@ -222,6 +222,13 @@
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-9.0.5.tgz#97f23adc933e96ba04c0ef93b3a8f0c2e7777e77"
   integrity sha512-Sz3DQUxlzAk9aZ9eVtZRh6xF5SMg/Gb3rc5I7dL1M+mycSNoFJ4HPTXleZkKM69mMkKQ5fEtza4x26MSlF+O9w==
 
+"@auth0/angular-jwt@^5.0.1":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@auth0/angular-jwt/-/angular-jwt-5.1.0.tgz#766abad6e6ee2e30b7c24362303c16b13e198a84"
+  integrity sha512-EAQoNKPQSZYphcX6FnY2e7xQpD4ZdHQ1DbHq/m+G1U1qA60m3XnhdjPPfu+blVHARlxEbRzWXc48UOVrnMsrZw==
+  dependencies:
+    tslib "^2.0.0"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.5.5", "@babel/code-frame@^7.8.3":
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.10.4.tgz#168da1a36e90da68ae8d49c0f1b48c7c6249213a"
@@ -936,6 +943,13 @@
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-6.0.0.tgz#03b80acd711dd38a653b34339224d5063c50bd62"
   integrity sha512-ho0Ssw+kwpGzc+Rvtu2pRSrcbduECMf9+uekhOMB1nzhUfF2vJQnTDpPfHZQgU/ukTMEJWvby5vcXJoPtHgE+w==
+
+"@ng-select/ng-select@^5.0.1":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-5.1.0.tgz#ef9f850e9aa58a03b9fce340e74ee1383a311e95"
+  integrity sha512-VcdZtr68PVsboUEFXfGF844qyYKPIrDNTGiLbQTEw593axCXO9GEL9YPD5QSangg+41w8F7/7ymkrrLpxfyRpw==
+  dependencies:
+    tslib "^2.0.0"
 
 "@ngrx/effects@^9.2.0":
   version "9.2.0"
@@ -2861,6 +2875,11 @@ deep-equal@^1.0.1:
     object-is "^1.0.1"
     object-keys "^1.1.1"
     regexp.prototype.flags "^1.2.0"
+
+deepmerge@^3.2.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-3.3.0.tgz#d3c47fd6f3a93d517b14426b0628a17b0125f5f7"
+  integrity sha512-GRQOafGHwMHpjPx9iCvTgpu9NojZ49q794EEL94JVEw6VaeA8XTUyBKvAkOOjBX9oJNiV6G3P+T+tihFjo2TqA==
 
 default-gateway@^4.2.0:
   version "4.2.0"
@@ -5557,6 +5576,13 @@ neo-async@^2.5.0, neo-async@^2.6.1:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+ngrx-store-localstorage@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/ngrx-store-localstorage/-/ngrx-store-localstorage-9.0.0.tgz#0d3652758065cc037507565bf05e7294aa1bc48c"
+  integrity sha512-F69yiNruZe9jgXcPykfbyKFuM/1JzL+wsBUM+TTfMDXIoaFO7xwuZF9yLG8zbvdglibtJ0OG2M8fy3oadWuV4A==
+  dependencies:
+    deepmerge "^3.2.0"
+
 ngx-clipboard@13.0.0:
   version "13.0.0"
   resolved "https://registry.yarnpkg.com/ngx-clipboard/-/ngx-clipboard-13.0.0.tgz#cbfc25b0fa5fbaaa76ee1229ebc7a6ed2ef0318b"
@@ -6716,9 +6742,9 @@ qs@6.7.0:
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
 qs@~6.5.2:
-  version "6.5.2"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
-  integrity sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.3.tgz#3aeeffc91967ef6e35c0e488ef46fb296ab76aad"
+  integrity sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==
 
 query-string@^4.1.0:
   version "4.3.4"
@@ -8133,6 +8159,11 @@ tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
   integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
+
+tslib@^2.0.0:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
+  integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
 
 tslint@6.0.0:
   version "6.0.0"
